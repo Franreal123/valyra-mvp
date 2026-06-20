@@ -2,17 +2,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Valyra surfaces. Warm-paper / ink editorial base. */
+/* Clean, modern surfaces — soft warm off-white canvas, ink foreground. */
 :root {
-  --background: #efe5d8; /* valyra-paper */
+  --background: #f7f4ee; /* valyra-canvas */
   --foreground: #1f3a4a; /* valyra-ink */
-  --rule: rgba(31, 58, 74, 0.16);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 @layer utilities {
@@ -27,30 +28,9 @@ body {
     letter-spacing: -0.02em;
   }
 
-  /* Editorial paper texture: faint architectural grid + film grain. */
-  .paper-texture {
-    background-color: #efe5d8;
-    background-image:
-      linear-gradient(to right, var(--rule) 1px, transparent 1px),
-      linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
-    background-size: 96px 96px;
-    background-position: center top;
-  }
-
-  .grain::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0.5;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
-  }
-
   .hairline {
     height: 1px;
-    background: var(--foreground);
+    background: rgba(31, 58, 74, 0.12);
     transform-origin: left;
   }
 }
@@ -60,7 +40,7 @@ body {
 @keyframes rise {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
@@ -80,17 +60,17 @@ body {
 @keyframes settle {
   from {
     opacity: 0;
-    transform: translateY(24px) rotate(-1.5deg);
+    transform: translateY(20px) rotate(-1deg);
   }
   to {
     opacity: 1;
-    transform: translateY(0) rotate(-1.5deg);
+    transform: translateY(0) rotate(-1deg);
   }
 }
 
 .anim-rise {
   opacity: 0;
-  animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: rise 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .anim-draw {
@@ -100,7 +80,7 @@ body {
 
 .anim-settle {
   opacity: 0;
-  animation: settle 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: settle 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
