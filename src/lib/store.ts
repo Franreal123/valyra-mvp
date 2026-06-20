@@ -1,7 +1,8 @@
-import { seedHomes } from "@/db/seed";
+import { seedHomes, seedHoldings } from "@/db/seed";
 import { mintTokens } from "@/lib/contract";
 import type {
   Application,
+  Holding,
   Offer,
   PropertyInput,
   TokenizedHome,
@@ -10,6 +11,7 @@ import type {
 // In-memory data layer (swappable for Supabase behind these same functions).
 const homes: TokenizedHome[] = [...seedHomes];
 const applications: Application[] = [];
+const holdings: Holding[] = [...seedHoldings];
 
 function pad4(n: number): string {
   return String(n).padStart(4, "0");
@@ -41,4 +43,42 @@ export function signOffer(
   const home = mintTokens(offer, { address: input.address, city: input.city }, id);
   homes.push(home);
   return home;
+}
+
+// --- Investor side -------------------------------------------------------
+
+export function getHoldings(): Holding[] {
+  return [...holdings];
+}
+
+export function getHome(id: string): TokenizedHome | undefined {
+  return homes.find((h) => h.id === id);
+}
+
+export function tokensSold(homeId: string): number {
+  return holdings
+    .filter((h) => h.homeId === homeId)
+    .reduce((sum, h) => sum + h.tokens, 0);
+}
+
+export function tokensAvailable(home: TokenizedHome): number {
+  return home.tokenCount - tokensSold(home.id);
+}
+
+export function buyTokens(homeId: string, tokens: number): Holding {
+  const home = getHome(homeId);
+  if (!home) throw new Error(`Unknown home: ${homeId}`);
+  if (tokens <= 0) throw new Error("Token amount must be positive");
+  if (tokens > tokensAvailable(home)) throw new Error("Not enough tokens available");
+
+  const holding: Holding = {
+    id: `HLD-${pad4(holdings.length + 1)}`,
+    homeId,
+    tokens,
+    tokenPrice: home.tokenPrice,
+    invested: Math.round(tokens * home.tokenPrice),
+    purchasedAt: new Date().toISOString(),
+  };
+  holdings.push(holding);
+  return holding;
 }
