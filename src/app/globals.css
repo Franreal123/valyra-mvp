@@ -2,20 +2,113 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Valyra surfaces. The MVP ships a single light theme built on the
-   "paper" background and "ink" foreground from the brand palette. */
+/* Valyra surfaces. Warm-paper / ink editorial base. */
 :root {
-  --background: #ffffff;
+  --background: #efe5d8; /* valyra-paper */
   --foreground: #1f3a4a; /* valyra-ink */
+  --rule: rgba(31, 58, 74, 0.16);
 }
 
 body {
   color: var(--foreground);
   background: var(--background);
+  font-family: var(--font-sans), system-ui, sans-serif;
 }
 
 @layer utilities {
   .text-balance {
     text-wrap: balance;
+  }
+
+  /* Optical refinement for big display serif headings. */
+  .display {
+    font-family: var(--font-display), Georgia, serif;
+    font-optical-sizing: auto;
+    letter-spacing: -0.02em;
+  }
+
+  /* Editorial paper texture: faint architectural grid + film grain. */
+  .paper-texture {
+    background-color: #efe5d8;
+    background-image:
+      linear-gradient(to right, var(--rule) 1px, transparent 1px),
+      linear-gradient(to bottom, var(--rule) 1px, transparent 1px);
+    background-size: 96px 96px;
+    background-position: center top;
+  }
+
+  .grain::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.06'/%3E%3C/svg%3E");
+  }
+
+  .hairline {
+    height: 1px;
+    background: var(--foreground);
+    transform-origin: left;
+  }
+}
+
+/* --- Orchestrated load animation -------------------------------------- */
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes settle {
+  from {
+    opacity: 0;
+    transform: translateY(24px) rotate(-1.5deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-1.5deg);
+  }
+}
+
+.anim-rise {
+  opacity: 0;
+  animation: rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-draw {
+  transform: scaleX(0);
+  animation: draw 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-settle {
+  opacity: 0;
+  animation: settle 1.1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-rise,
+  .anim-draw,
+  .anim-settle {
+    animation: none;
+    opacity: 1;
+    transform: none;
   }
 }
