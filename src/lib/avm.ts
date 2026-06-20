@@ -32,7 +32,11 @@ export function valuateProperty(input: PropertyInput): Valuation {
   const age = Math.max(0, REFERENCE_YEAR - input.buildYear);
   const ageAdj = Math.min(1.05, Math.max(0.9, 1.05 - age * 0.0015));
 
-  const value = roundTo500(base * labelAdj * ageAdj);
+  const areaEstimate = base * labelAdj * ageAdj;
+  // Anchor to the official WOZ-waarde when supplied: weight the area model 65%,
+  // WOZ 35% (WOZ tends to lag market, so it's a sanity anchor, not the driver).
+  const woz = input.wozValue && input.wozValue > 0 ? input.wozValue : null;
+  const value = roundTo500(woz ? 0.65 * areaEstimate + 0.35 * woz : areaEstimate);
 
   return {
     value,

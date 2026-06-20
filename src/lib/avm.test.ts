@@ -40,4 +40,12 @@ describe("valuateProperty", () => {
     expect(v.high).toBeGreaterThan(v.value);
     expect(Math.round(((v.high - v.value) / v.value) * 100)).toBe(4);
   });
+
+  it("blends the WOZ-waarde into the estimate when provided", () => {
+    // area estimate 472,642.5; blend 0.65×area + 0.35×500,000 = 482,217.5 → €482,000
+    const v = valuateProperty({ ...base, wozValue: 500_000 });
+    expect(v.value).toBe(482_000);
+    // and it leaves the area-only value unchanged when WOZ is absent
+    expect(valuateProperty(base).value).toBe(472_500);
+  });
 });

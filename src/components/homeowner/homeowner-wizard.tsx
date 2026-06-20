@@ -9,6 +9,7 @@ import { Field, inputClass } from "@/components/ui/field";
 import { Stepper } from "@/components/ui/stepper";
 import { valuateProperty } from "@/lib/avm";
 import { buildOffer } from "@/lib/contract";
+import { assessEquity } from "@/lib/eligibility";
 import { createApplication, signOffer } from "@/lib/store";
 import { formatEUR, formatEURPrecise } from "@/lib/format";
 import { CITY_PRICES } from "@/db/seed";
@@ -29,6 +30,8 @@ type FormState = {
   buildYear: string;
   energyLabel: EnergyLabel;
   sharePct: number;
+  mortgageBalance: string;
+  wozValue: string;
 };
 
 const INITIAL: FormState = {
@@ -39,6 +42,8 @@ const INITIAL: FormState = {
   buildYear: "2000",
   energyLabel: "C",
   sharePct: 10,
+  mortgageBalance: "250000",
+  wozValue: "",
 };
 
 function Row({ label, value }: { label: string; value: string }) {
@@ -64,11 +69,17 @@ export function HomeownerWizard() {
       buildYear: Number(form.buildYear) || 2000,
       energyLabel: form.energyLabel,
       sharePct: form.sharePct,
+      mortgageBalance: Number(form.mortgageBalance) || 0,
+      wozValue: Number(form.wozValue) || 0,
     }),
     [form],
   );
 
   const valuation = useMemo(() => valuateProperty(input), [input]);
+  const equity = useMemo(
+    () => assessEquity(valuation.value, input.mortgageBalance ?? 0, form.sharePct),
+    [valuation.value, input.mortgageBalance, form.sharePct],
+  );
   const offer = useMemo(
     () => buildOffer(valuation, form.sharePct),
     [valuation, form.sharePct],
@@ -154,6 +165,23 @@ export function HomeownerWizard() {
                   ))}
                 </select>
               </Field>
+              <Field label="Outstanding mortgage (€)" hint="The HESA is junior to it.">
+                <input
+                  type="number"
+                  className={inputClass}
+                  value={form.mortgageBalance}
+                  onChange={(e) => set("mortgageBalance", e.target.value)}
+                />
+              </Field>
+              <Field label="WOZ value (€)" hint="Optional — official municipal value.">
+                <input
+                  type="number"
+                  className={inputClass}
+                  value={form.wozValue}
+                  onChange={(e) => set("wozValue", e.target.value)}
+                  placeholder="optional"
+                />
+              </Field>
             </div>
             <Field
               label={`Share of future appreciation to sell: ${form.sharePct}%`}
@@ -205,13 +233,34 @@ export function HomeownerWizard() {
                   Build year {form.buildYear} adjustment ×
                   {valuation.breakdown.ageAdj.toFixed(3)}
                 </li>
+                {(input.wozValue ?? 0) > 0 && (
+                  <li>Blended 65% / 35% with WOZ {formatEUR(input.wozValue ?? 0)}</li>
+                )}
               </ul>
             </div>
+
+            {/* Equity & eligibility — a HESA is junior to the mortgage. */}
+            <div className="rounded-xl border border-valyra-line p-4 text-sm">
+              <dl className="divide-y divide-valyra-ink/10">
+                <Row label="Outstanding mortgage" value={formatEUR(equity.mortgageBalance)} />
+                <Row label="Your equity" value={`${formatEUR(equity.equity)} · ${equity.equityPct}% of value`} />
+                <Row label="Loan-to-value (LTV)" value={`${equity.ltvPct}%`} />
+                <Row label="Max share you can tokenize" value={`${equity.maxSharePct}%`} />
+              </dl>
+              {!equity.eligible && (
+                <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
+                  {equity.equity <= 0
+                    ? "No unmortgaged equity — nothing can be tokenized."
+                    : `You can tokenize at most ${equity.maxSharePct}%. Lower your share on the previous step.`}
+                </p>
+              )}
+            </div>
+
             <div className="flex justify-between">
               <Button variant="ghost" onClick={() => setStep(0)}>
                 <ArrowLeft size={18} /> Back
               </Button>
-              <Button onClick={() => setStep(2)}>
+              <Button disabled={!equity.eligible} onClick={() => setStep(2)}>
                 See my offer <ArrowRight size={18} />
               </Button>
             </div>

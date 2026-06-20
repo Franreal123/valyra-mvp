@@ -8,6 +8,8 @@ export interface PropertyInput {
   buildYear: number;
   energyLabel: EnergyLabel;
   sharePct: number; // requested share of future appreciation, 5..20
+  mortgageBalance?: number; // outstanding mortgage (EUR); HESA is junior to it
+  wozValue?: number; // official municipal valuation (WOZ-waarde), optional AVM anchor
 }
 
 export interface Valuation {
