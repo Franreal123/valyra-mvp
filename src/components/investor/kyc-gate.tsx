@@ -24,7 +24,8 @@ export function KycGate({
   const [ack, setAck] = useState(false);
 
   const year = Number(birthYear);
-  const isAdult = year > 1900 && 2026 - year >= 18;
+  const isAdult = year > 1900 && new Date().getFullYear() - year >= 18;
+  const yearEntered = birthYear.length >= 4; // don't flag mid-typing
   const valid =
     name.trim().length > 1 && isAdult && experience !== "" && bearLoss && ack;
 
@@ -89,7 +90,7 @@ export function KycGate({
             <input type="checkbox" checked={ack} onChange={(e) => setAck(e.target.checked)} className="mt-0.5 accent-valyra-blue" />
             I understand these tokens are illiquid, long-dated, and can fall in value.
           </label>
-          {birthYear !== "" && !isAdult && (
+          {yearEntered && !isAdult && (
             <p className="text-xs text-red-600">You must be 18 or older to invest.</p>
           )}
         </div>

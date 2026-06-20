@@ -1,3 +1,8 @@
+// CLIENT-ONLY: every value here is in-memory, module-level singleton state.
+// In production this becomes a Supabase-backed module behind the same interface.
+// Until then, do NOT import this from a Server Component or Server Action — the
+// singletons (incl. `kycVerified`) would be shared across all requests/users.
+// Invariants like "KYC before buyTokens" are enforced in the UI, not here.
 import { seedHomes, seedHoldings } from "@/db/seed";
 import { mintTokens } from "@/lib/contract";
 import { settlementQuote } from "@/lib/admin";

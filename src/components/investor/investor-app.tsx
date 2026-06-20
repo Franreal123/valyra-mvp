@@ -36,7 +36,7 @@ export function InvestorApp() {
 
   // Gate the first purchase behind KYC; afterwards open the buy panel directly.
   function handleInvest(home: TokenizedHome) {
-    if (isKycVerified()) setBuying(home);
+    if (verified) setBuying(home);
     else setVerifyingFor(home);
   }
 
@@ -105,7 +105,6 @@ export function InvestorApp() {
           onDone={() => {
             setBuying(verifyingFor);
             setVerifyingFor(null);
-            setTick((t) => t + 1);
           }}
         />
       )}
