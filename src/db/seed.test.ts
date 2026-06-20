@@ -19,4 +19,12 @@ describe("seed data", () => {
       expect(h.tokenCount).toBe(h.sharePct * 1000);
     }
   });
+
+  it("seed homes' tokenPrice is the 2dp-rounded unit price of cashPaid", () => {
+    for (const home of seedHomes) {
+      expect(home.tokenPrice).toBe(
+        Math.round((home.cashPaid / home.tokenCount) * 100) / 100
+      );
+    }
+  });
 });
