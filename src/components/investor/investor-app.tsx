@@ -9,6 +9,7 @@ import { BuyPanel } from "@/components/investor/buy-panel";
 import { PortfolioView } from "@/components/investor/portfolio-view";
 import {
   getHomes,
+  getActiveHomes,
   getHoldings,
   tokensAvailable,
   buyTokens,
@@ -24,9 +25,10 @@ export function InvestorApp() {
   const [, setTick] = useState(0);
   const [buying, setBuying] = useState<TokenizedHome | null>(null);
 
-  const homes = getHomes();
+  const activeHomes = getActiveHomes(); // settled homes have left the market
   const holdings = getHoldings();
-  const summary = summarisePortfolio(holdings, homes);
+  // Value holdings against all homes (so a just-settled home can still resolve).
+  const summary = summarisePortfolio(holdings, getHomes());
 
   function confirmBuy(tokens: number) {
     if (!buying) return;
@@ -62,7 +64,7 @@ export function InvestorApp() {
 
       {tab === "market" ? (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {homes.map((home) => (
+          {activeHomes.map((home) => (
             <HomeCard
               key={home.id}
               home={home}
