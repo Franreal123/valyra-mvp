@@ -4,8 +4,10 @@ import { useState } from "react";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Field, inputClass } from "@/components/ui/field";
+import { cn } from "@/lib/utils";
 import { formatEUR, formatEURPrecise } from "@/lib/format";
 import { MIN_INVESTMENT_EUR, tokensForAmount } from "@/lib/market";
+import { TERM_YEARS, projectHomeScenarios } from "@/lib/scenarios";
 import type { TokenizedHome } from "@/lib/types";
 
 // Modal to buy tokens in one home. Investor enters a € amount; we floor it to
@@ -32,6 +34,9 @@ export function BuyPanel({
   const belowMin = amountNum < MIN_INVESTMENT_EUR;
   const overSupply = tokens > available;
   const valid = !belowMin && !overSupply && tokens > 0;
+
+  // Risk/return projection over the HESA term (incl. the downside path).
+  const scenarios = projectHomeScenarios(home, cost);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-valyra-ink/40 p-4">
@@ -79,6 +84,40 @@ export function BuyPanel({
         )}
         {overSupply && (
           <p className="mt-2 text-xs text-red-600">Only {available.toLocaleString("nl-NL")} tokens are available.</p>
+        )}
+
+        {/* Projected outcomes over the term — downside shown first. */}
+        {valid && (
+          <div className="mt-4 rounded-xl bg-valyra-canvas p-3">
+            <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.16em] text-valyra-ink/50">
+              Projected at {TERM_YEARS}-yr term
+            </p>
+            <table className="w-full text-sm">
+              <tbody>
+                {scenarios.map((s) => (
+                  <tr key={s.label}>
+                    <td className="py-1 text-valyra-ink/60">{s.label}</td>
+                    <td className="py-1 text-right tabular-nums text-valyra-ink">
+                      {formatEUR(s.endingValue)}
+                    </td>
+                    <td
+                      className={cn(
+                        "py-1 pl-3 text-right font-mono text-xs tabular-nums",
+                        s.gain >= 0 ? "text-valyra-lime" : "text-red-600",
+                      )}
+                    >
+                      {s.gain >= 0 ? "+" : "−"}
+                      {Math.abs(s.irrPct)}%/yr
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p className="mt-2 text-[10px] leading-snug text-valyra-ink/45">
+              Tokens track the home&apos;s value, which can fall as well as rise.
+              Returns are simulated, not guaranteed.
+            </p>
+          </div>
         )}
 
         <div className="mt-5 flex justify-end gap-2">
