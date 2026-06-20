@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft, CheckCircle2, RotateCcw, X } from "lucide-react";
+import { CheckCircle2, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -47,11 +46,8 @@ export function AdminDashboard() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-valyra-blue hover:underline">
-        <ArrowLeft size={16} /> Back
-      </Link>
       <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="text-3xl font-semibold text-valyra-ink">Platform overview</h1>
+        <h1 className="display text-4xl font-medium text-valyra-ink">Platform overview</h1>
         <button
           onClick={handleReset}
           className="inline-flex items-center gap-1.5 rounded-full border border-valyra-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-valyra-ink/60 hover:border-valyra-blue hover:text-valyra-blue"
@@ -77,7 +73,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Homes & settlement */}
-      <h2 className="mb-3 mt-10 text-lg font-semibold text-valyra-ink">Homes &amp; settlement</h2>
+      <h2 className="display mb-3 mt-10 text-xl font-medium text-valyra-ink">Homes &amp; settlement</h2>
       <Card className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>

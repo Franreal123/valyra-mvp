@@ -14,3 +14,10 @@ describe("formatEURPrecise", () => {
     expect(formatEURPrecise(4250.5)).toBe("€4.250,50");
   });
 });
+
+describe("negative formatting", () => {
+  it("uses a true minus sign (U+2212), consistently", () => {
+    expect(formatEUR(-420)).toBe("€−420");
+    expect(formatEURPrecise(-4.25)).toBe("€−4,25");
+  });
+});

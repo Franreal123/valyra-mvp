@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HomeCard } from "@/components/investor/home-card";
 import { BuyPanel } from "@/components/investor/buy-panel";
@@ -40,12 +38,8 @@ export function InvestorApp() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-valyra-blue hover:underline">
-        <ArrowLeft size={16} /> Back
-      </Link>
-
       <div className="mb-8 flex items-end justify-between">
-        <h1 className="text-3xl font-semibold text-valyra-ink">Marketplace</h1>
+        <h1 className="display text-4xl font-medium text-valyra-ink">Marketplace</h1>
         <nav className="flex gap-1 rounded-full bg-valyra-ink/5 p-1">
           {(["market", "portfolio"] as Tab[]).map((t) => (
             <button

@@ -89,18 +89,12 @@ export function HomeownerWizard() {
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-10">
-      <Link
-        href="/"
-        className="mb-6 inline-flex items-center gap-1 text-sm text-valyra-blue hover:underline"
-      >
-        <ArrowLeft size={16} /> Back
-      </Link>
       <Stepper steps={STEPS} current={step} />
 
       <div className="mt-8">
         {step === 0 && (
           <Card className="flex flex-col gap-4">
-            <h2 className="text-xl font-semibold text-valyra-ink">
+            <h2 className="display text-2xl font-medium text-valyra-ink">
               Tell us about your home
             </h2>
             <Field label="Address">
@@ -184,7 +178,7 @@ export function HomeownerWizard() {
 
         {step === 1 && (
           <Card className="flex flex-col gap-4">
-            <h2 className="text-xl font-semibold text-valyra-ink">
+            <h2 className="display text-2xl font-medium text-valyra-ink">
               Estimated value
             </h2>
             <p className="text-4xl font-semibold text-valyra-blue">
@@ -226,7 +220,7 @@ export function HomeownerWizard() {
 
         {step === 2 && (
           <Card className="flex flex-col gap-4">
-            <h2 className="text-xl font-semibold text-valyra-ink">Your offer</h2>
+            <h2 className="display text-2xl font-medium text-valyra-ink">Your offer</h2>
             <div className="rounded-xl bg-valyra-lime/15 p-5">
               <p className="text-sm text-valyra-ink/70">Cash to you today</p>
               <p className="text-4xl font-semibold text-valyra-ink">
@@ -270,7 +264,7 @@ export function HomeownerWizard() {
         {step === 3 && home && (
           <Card className="flex flex-col items-center gap-3 text-center">
             <CheckCircle2 className="text-valyra-lime" size={48} />
-            <h2 className="text-xl font-semibold text-valyra-ink">
+            <h2 className="display text-2xl font-medium text-valyra-ink">
               Agreement signed
             </h2>
             <p className="text-valyra-ink/70">
