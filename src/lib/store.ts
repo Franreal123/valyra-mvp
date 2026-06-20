@@ -91,7 +91,7 @@ export function isSettled(homeId: string): boolean {
 }
 
 export function getSettledIds(): string[] {
-  return [...settledIds];
+  return Array.from(settledIds);
 }
 
 export function settleHome(homeId: string): void {
