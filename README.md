@@ -91,5 +91,17 @@ Available as Tailwind classes, e.g. `bg-valyra-blue`, `text-valyra-ink`.
 
 ## Status
 
-✅ Scaffold + branded landing page. Routes are stubbed placeholders.
-⏭️ **Next:** wire up Supabase (schema + seed data) and build the homeowner journey.
+All three MVP flows are built against a simulated `/lib` layer and an in-memory store:
+
+- ✅ **Landing page** — branded entry with links into each flow.
+- ✅ **Homeowner** (`/homeowner`) — 4-step wizard: apply → AVM valuation → offer → sign (mints tokens).
+- ✅ **Investor** (`/investor`) — marketplace, buy fractional tokens (from €100), portfolio with simulated appreciation + allocation chart.
+- ✅ **Admin** (`/admin`) — platform KPIs and per-home settlement.
+
+A home signed in the homeowner flow flows through the shared store into the investor
+marketplace and admin overview.
+
+⏭️ **Next:** swap the in-memory store (`src/lib/store.ts`) for Supabase behind the
+same interface; add persistence and auth.
+
+> Tests: `npm test` (34 unit tests, Vitest). Specs & plans live in `docs/superpowers/`.
