@@ -122,6 +122,18 @@ export function settleHome(homeId: string): number {
   return payout;
 }
 
+// --- Investor onboarding (simulated KYC / suitability) -------------------
+
+let kycVerified = false;
+
+export function isKycVerified(): boolean {
+  return kycVerified;
+}
+
+export function completeKyc(): void {
+  kycVerified = true;
+}
+
 // Restore the store to its seeded demo state.
 export function resetDemo(): void {
   homes.splice(0, homes.length, ...seedHomes);
@@ -129,4 +141,5 @@ export function resetDemo(): void {
   applications.length = 0;
   settledIds.clear();
   settlementPayouts.clear();
+  kycVerified = false;
 }

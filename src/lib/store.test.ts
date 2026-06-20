@@ -14,6 +14,8 @@ import {
   getActiveHomes,
   getSettlementPayout,
   resetDemo,
+  isKycVerified,
+  completeKyc,
 } from "@/lib/store";
 import { buildOffer } from "@/lib/contract";
 import type { PropertyInput, Valuation } from "@/lib/types";
@@ -107,5 +109,13 @@ describe("investor store", () => {
     expect(getHoldings().length).toBe(4); // back to the 4 seed holdings
     expect(getSettledIds().length).toBe(0);
     expect(getActiveHomes().length).toBe(6); // all seed homes active again
+  });
+
+  it("KYC starts unverified, completeKyc verifies, resetDemo clears it", () => {
+    expect(isKycVerified()).toBe(false);
+    completeKyc();
+    expect(isKycVerified()).toBe(true);
+    resetDemo();
+    expect(isKycVerified()).toBe(false);
   });
 });
