@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Valyra surfaces. The MVP ships a single light theme built on the
+   "paper" background and "ink" foreground from the brand palette. */
+:root {
+  --background: #ffffff;
+  --foreground: #1f3a4a; /* valyra-ink */
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
