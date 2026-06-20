@@ -11,6 +11,9 @@ import {
   isSettled,
   settleHome,
   getSettledIds,
+  getActiveHomes,
+  getSettlementPayout,
+  resetDemo,
 } from "@/lib/store";
 import { buildOffer } from "@/lib/contract";
 import type { PropertyInput, Valuation } from "@/lib/types";
@@ -81,14 +84,28 @@ describe("investor store", () => {
     expect(() => buyTokens("VH-0002", tokensAvailable(home) + 1)).toThrow();
   });
 
-  it("settleHome marks a home settled and is reflected in queries", () => {
-    expect(isSettled("VH-0001")).toBe(false);
-    settleHome("VH-0001");
-    expect(isSettled("VH-0001")).toBe(true);
-    expect(getSettledIds()).toContain("VH-0001");
+  it("settleHome buys out holders, removes holdings, and records the payout", () => {
+    // VH-0003 appreciation 10% -> current token price 3.74; 4,000 held
+    expect(isSettled("VH-0003")).toBe(false);
+    const payout = settleHome("VH-0003");
+    expect(payout).toBe(14_960); // 4,000 × 3.74
+    expect(isSettled("VH-0003")).toBe(true);
+    expect(getSettledIds()).toContain("VH-0003");
+    expect(getSettlementPayout("VH-0003")).toBe(14_960);
+    expect(tokensSold("VH-0003")).toBe(0); // holdings bought out
+    expect(getActiveHomes().some((h) => h.id === "VH-0003")).toBe(false);
   });
 
   it("settleHome throws for an unknown home", () => {
     expect(() => settleHome("VH-9999")).toThrow();
+  });
+
+  it("resetDemo restores the seeded state", () => {
+    settleHome("VH-0006");
+    buyTokens("VH-0004", 50);
+    resetDemo();
+    expect(getHoldings().length).toBe(4); // back to the 4 seed holdings
+    expect(getSettledIds().length).toBe(0);
+    expect(getActiveHomes().length).toBe(6); // all seed homes active again
   });
 });

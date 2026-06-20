@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, CheckCircle2, X } from "lucide-react";
+import { ArrowLeft, CheckCircle2, RotateCcw, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -13,6 +13,8 @@ import {
   tokensSold,
   isSettled,
   settleHome,
+  getSettlementPayout,
+  resetDemo,
 } from "@/lib/store";
 import { platformStats, settlementQuote } from "@/lib/admin";
 import { currentHomeValue } from "@/lib/market";
@@ -35,6 +37,12 @@ export function AdminDashboard() {
     setTick((t) => t + 1);
   }
 
+  function handleReset() {
+    if (!window.confirm("Reset all demo data to its seeded state?")) return;
+    resetDemo();
+    setTick((t) => t + 1);
+  }
+
   const quote = settling ? settlementQuote(settling, holdings) : null;
 
   return (
@@ -42,7 +50,15 @@ export function AdminDashboard() {
       <Link href="/" className="mb-6 inline-flex items-center gap-1 text-sm text-valyra-blue hover:underline">
         <ArrowLeft size={16} /> Back
       </Link>
-      <h1 className="mb-8 text-3xl font-semibold text-valyra-ink">Platform overview</h1>
+      <div className="mb-8 flex items-center justify-between gap-4">
+        <h1 className="text-3xl font-semibold text-valyra-ink">Platform overview</h1>
+        <button
+          onClick={handleReset}
+          className="inline-flex items-center gap-1.5 rounded-full border border-valyra-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-valyra-ink/60 hover:border-valyra-blue hover:text-valyra-blue"
+        >
+          <RotateCcw size={13} /> Reset demo
+        </button>
+      </div>
 
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -75,9 +91,12 @@ export function AdminDashboard() {
           </thead>
           <tbody>
             {homes.map((home) => {
-              const funded = Math.round((tokensSold(home.id) / home.tokenCount) * 100);
-              const payout = settlementQuote(home, holdings).payout;
               const settled = isSettled(home.id);
+              const funded = Math.round((tokensSold(home.id) / home.tokenCount) * 100);
+              // Live buy-out cost while open; the recorded amount once settled.
+              const payout = settled
+                ? getSettlementPayout(home.id)
+                : settlementQuote(home, holdings).payout;
               return (
                 <tr key={home.id} className="border-b border-valyra-ink/5 last:border-0">
                   <td className="py-3">
@@ -87,8 +106,11 @@ export function AdminDashboard() {
                     </span>
                   </td>
                   <td className="py-3 text-right text-valyra-ink">{formatEUR(currentHomeValue(home))}</td>
-                  <td className="py-3 text-right text-valyra-ink">{funded}%</td>
-                  <td className="py-3 text-right text-valyra-ink">{formatEUR(payout)}</td>
+                  <td className="py-3 text-right text-valyra-ink">{settled ? "—" : `${funded}%`}</td>
+                  <td className="py-3 text-right text-valyra-ink">
+                    {formatEUR(payout)}
+                    {settled && <span className="block text-[10px] uppercase tracking-wide text-valyra-ink/40">paid out</span>}
+                  </td>
                   <td className="py-3 text-right">
                     {settled ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-valyra-lime/20 px-2 py-1 text-xs font-medium text-valyra-ink">
