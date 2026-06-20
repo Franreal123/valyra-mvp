@@ -1,4 +1,4 @@
-import type { Holding, TokenizedHome } from "@/lib/types";
+import type { Holding, Listing, TokenizedHome } from "@/lib/types";
 
 // Indicative NL residential €/m² levels (simulated, ~2026). Keys are lowercased.
 export const CITY_PRICES: Record<string, number> = {
@@ -127,5 +127,47 @@ export const seedHoldings: Holding[] = [
     tokenPrice: 2.89,
     invested: 5_780,
     purchasedAt: "2026-05-24T09:00:00.000Z",
+  },
+];
+
+// Tokens held by OTHER investors ("the market"). They back secondary listings
+// and count toward a home's sold supply, but never appear in your portfolio.
+export const seedMarketHoldings: Holding[] = [
+  {
+    id: "MKT-0001",
+    homeId: "VH-0004",
+    tokens: 1_500,
+    tokenPrice: 4.76,
+    invested: 7_140,
+    purchasedAt: "2026-05-19T09:00:00.000Z",
+    owner: "market",
+  },
+  {
+    id: "MKT-0002",
+    homeId: "VH-0006",
+    tokens: 2_000,
+    tokenPrice: 2.55,
+    invested: 5_100,
+    purchasedAt: "2026-05-27T09:00:00.000Z",
+    owner: "market",
+  },
+];
+
+// Secondary-market SELL orders, backed 1:1 by the market holdings above. Prices
+// sit near each home's current token price (a small discount / premium).
+export const seedListings: Listing[] = [
+  {
+    id: "LST-0001",
+    homeId: "VH-0004",
+    tokens: 1_500,
+    pricePerToken: 5.1, // vs ~€5.28 current — a small discount
+    createdAt: "2026-06-01T09:00:00.000Z",
+  },
+  {
+    id: "LST-0002",
+    homeId: "VH-0006",
+    tokens: 2_000,
+    pricePerToken: 2.95, // vs ~€2.88 current — a small premium
+    createdAt: "2026-06-03T09:00:00.000Z",
   },
 ];

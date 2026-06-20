@@ -61,4 +61,14 @@ export interface Holding {
   tokenPrice: number; // price paid per token at purchase (the mint price)
   invested: number; // tokens × tokenPrice, EUR
   purchasedAt: string; // ISO
+  owner?: "you" | "market"; // undefined = the demo user; "market" = other holders
+}
+
+// A secondary-market SELL order: an existing holder offering tokens for resale.
+export interface Listing {
+  id: string; // e.g. "LST-0001"
+  homeId: string;
+  tokens: number;
+  pricePerToken: number; // ask price (2dp)
+  createdAt: string; // ISO
 }
