@@ -2,7 +2,7 @@ import { TrendingUp } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { formatEUR, formatEURPrecise } from "@/lib/format";
-import { simulateAppreciationPct } from "@/lib/market";
+import { simulateAppreciationPct, MIN_INVESTMENT_EUR } from "@/lib/market";
 import type { TokenizedHome } from "@/lib/types";
 
 // Marketplace card for one tokenized home. `available` is passed in by the
@@ -18,6 +18,9 @@ export function HomeCard({
 }) {
   const soldPct = Math.round(((home.tokenCount - available) / home.tokenCount) * 100);
   const fullyFunded = available <= 0;
+  // Not strictly sold out, but too few tokens left to clear the €100 minimum.
+  const belowMinimum = !fullyFunded && available * home.tokenPrice < MIN_INVESTMENT_EUR;
+  const closed = fullyFunded || belowMinimum;
 
   return (
     <Card className="flex flex-col gap-3">
@@ -49,12 +52,12 @@ export function HomeCard({
       </div>
 
       <Button
-        variant={fullyFunded ? "ghost" : "primary"}
-        disabled={fullyFunded}
+        variant={closed ? "ghost" : "primary"}
+        disabled={closed}
         onClick={() => onInvest(home)}
         className="mt-1"
       >
-        {fullyFunded ? "Fully funded" : "Invest"}
+        {fullyFunded ? "Fully funded" : belowMinimum ? "Almost funded" : "Invest"}
       </Button>
     </Card>
   );

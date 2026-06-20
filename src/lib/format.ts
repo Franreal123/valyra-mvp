@@ -1,15 +1,19 @@
+// Negatives use a true minus sign (U+2212) for typographic consistency.
+const MINUS = "−";
+
 // Whole euros with dot thousands separators, e.g. 42500 -> "€42.500".
 export function formatEUR(n: number): string {
   const rounded = Math.round(n);
   const grouped = Math.abs(rounded)
     .toString()
     .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return `€${rounded < 0 ? "-" : ""}${grouped}`;
+  return `€${rounded < 0 ? MINUS : ""}${grouped}`;
 }
 
 // Two decimals, comma decimal separator, e.g. 4.25 -> "€4,25".
 export function formatEURPrecise(n: number): string {
-  const [int, dec] = n.toFixed(2).split(".");
+  const sign = n < 0 ? MINUS : "";
+  const [int, dec] = Math.abs(n).toFixed(2).split(".");
   const grouped = int.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-  return `€${grouped},${dec}`;
+  return `€${sign}${grouped},${dec}`;
 }
