@@ -21,10 +21,12 @@ export function assessEquity(
 ): EquityAssessment {
   const mortgage = Math.max(0, mortgageBalance);
   const equity = value - mortgage;
+  const rawEquityPct = value > 0 ? (equity / value) * 100 : 0;
   const ltvPct = value > 0 ? Math.round((mortgage / value) * 1000) / 10 : 0;
-  const equityPct = value > 0 ? Math.round((equity / value) * 1000) / 10 : 0;
-  // Can't tokenize more appreciation than the unmortgaged stake; cap at product max.
-  const maxSharePct = Math.max(0, Math.min(MAX_SHARE_PCT, Math.floor(equityPct)));
+  const equityPct = Math.max(0, Math.round(rawEquityPct * 10) / 10);
+  // Floor the RAW ratio (not the display-rounded %) so a 9.995% stake can't be
+  // rounded up to a 10% allowance. Can't tokenize more than the unmortgaged stake.
+  const maxSharePct = Math.max(0, Math.min(MAX_SHARE_PCT, Math.floor(rawEquityPct)));
   const eligible = equity > 0 && requestedSharePct <= maxSharePct;
   return {
     value,

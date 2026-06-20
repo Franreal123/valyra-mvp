@@ -93,6 +93,7 @@ export function HomeownerWizard() {
   }
 
   function handleSign() {
+    if (!equity.eligible) return; // backstop the step-1 eligibility gate
     createApplication(input, offer);
     setHome(signOffer(input, offer));
     setStep(3);
@@ -176,6 +177,8 @@ export function HomeownerWizard() {
               <Field label="WOZ value (€)" hint="Optional — official municipal value.">
                 <input
                   type="number"
+                  min={1000}
+                  max={5000000}
                   className={inputClass}
                   value={form.wozValue}
                   onChange={(e) => set("wozValue", e.target.value)}
@@ -251,7 +254,9 @@ export function HomeownerWizard() {
                 <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700">
                   {equity.equity <= 0
                     ? "No unmortgaged equity — nothing can be tokenized."
-                    : `You can tokenize at most ${equity.maxSharePct}%. Lower your share on the previous step.`}
+                    : equity.maxSharePct < 5
+                      ? `Your equity covers at most ${equity.maxSharePct}% — below the 5% product minimum, so tokenization isn't available.`
+                      : `You can tokenize at most ${equity.maxSharePct}%. Lower your share on the previous step.`}
                 </p>
               )}
             </div>
@@ -303,7 +308,7 @@ export function HomeownerWizard() {
               <Button variant="ghost" onClick={() => setStep(1)}>
                 <ArrowLeft size={18} /> Back
               </Button>
-              <Button onClick={handleSign}>
+              <Button disabled={!equity.eligible} onClick={handleSign}>
                 Sign agreement <ArrowRight size={18} />
               </Button>
             </div>

@@ -24,7 +24,16 @@ describe("assessEquity", () => {
   it("is ineligible with no equity (underwater or fully mortgaged)", () => {
     const a = assessEquity(400_000, 420_000, 5);
     expect(a.equity).toBe(0);
+    expect(a.equityPct).toBe(0); // not a contradictory negative %
     expect(a.maxSharePct).toBe(0);
+    expect(a.eligible).toBe(false);
+  });
+
+  it("floors the raw equity ratio, not the rounded display %", () => {
+    // €39,980 equity on €400k = 9.995% → must allow at most 9%, not round up to 10%
+    const a = assessEquity(400_000, 360_020, 10);
+    expect(a.equityPct).toBe(10); // display rounds to 10.0%
+    expect(a.maxSharePct).toBe(9); // but the allowance floors the raw 9.995%
     expect(a.eligible).toBe(false);
   });
 
