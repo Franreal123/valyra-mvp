@@ -38,6 +38,7 @@ export function AdminDashboard() {
   }
 
   function handleReset() {
+    if (!window.confirm("Reset all demo data to its seeded state?")) return;
     resetDemo();
     setTick((t) => t + 1);
   }
