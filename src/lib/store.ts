@@ -28,6 +28,9 @@ const holdings: Holding[] = [...seedHoldings, ...seedMarketHoldings];
 const listings: Listing[] = [...seedListings];
 const settledIds = new Set<string>();
 const settlementPayouts = new Map<string, number>(); // homeId -> EUR paid out
+// Monotonic so holding ids stay unique even as holdings are spliced out
+// (buying a listing removes a market holding, shrinking the array).
+let holdingSeq = seedHoldings.length;
 
 function pad4(n: number): string {
   return String(n).padStart(4, "0");
@@ -98,7 +101,7 @@ export function buyTokens(homeId: string, tokens: number): Holding {
   if (tokens > tokensAvailable(home)) throw new Error("Not enough tokens available");
 
   const holding: Holding = {
-    id: `HLD-${pad4(holdings.length + 1)}`,
+    id: `HLD-${pad4(++holdingSeq)}`,
     homeId,
     tokens,
     tokenPrice: home.tokenPrice,
@@ -168,7 +171,7 @@ export function buyListing(listingId: string): Holding {
   }
 
   const holding: Holding = {
-    id: `HLD-${pad4(holdings.length + 1)}`,
+    id: `HLD-${pad4(++holdingSeq)}`,
     homeId: listing.homeId,
     tokens: listing.tokens,
     tokenPrice: listing.pricePerToken,
@@ -202,4 +205,5 @@ export function resetDemo(): void {
   settledIds.clear();
   settlementPayouts.clear();
   kycVerified = false;
+  holdingSeq = seedHoldings.length;
 }

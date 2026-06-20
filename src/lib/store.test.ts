@@ -146,4 +146,11 @@ describe("secondary market", () => {
   it("buyListing throws for an unknown listing", () => {
     expect(() => buyListing("LST-9999")).toThrow();
   });
+
+  it("gives consecutive secondary buys unique holding ids", () => {
+    resetDemo();
+    const a = buyListing("LST-0001");
+    const b = buyListing("LST-0002");
+    expect(a.id).not.toBe(b.id); // monotonic counter survives the splice
+  });
 });
