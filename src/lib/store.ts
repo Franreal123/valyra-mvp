@@ -1,3 +1,8 @@
+// CLIENT-ONLY: every value here is in-memory, module-level singleton state.
+// In production this becomes a Supabase-backed module behind the same interface.
+// Until then, do NOT import this from a Server Component or Server Action — the
+// singletons (incl. `kycVerified`) would be shared across all requests/users.
+// Invariants like "KYC before buyTokens" are enforced in the UI, not here.
 import { seedHomes, seedHoldings } from "@/db/seed";
 import { mintTokens } from "@/lib/contract";
 import { settlementQuote } from "@/lib/admin";
@@ -122,6 +127,18 @@ export function settleHome(homeId: string): number {
   return payout;
 }
 
+// --- Investor onboarding (simulated KYC / suitability) -------------------
+
+let kycVerified = false;
+
+export function isKycVerified(): boolean {
+  return kycVerified;
+}
+
+export function completeKyc(): void {
+  kycVerified = true;
+}
+
 // Restore the store to its seeded demo state.
 export function resetDemo(): void {
   homes.splice(0, homes.length, ...seedHomes);
@@ -129,4 +146,5 @@ export function resetDemo(): void {
   applications.length = 0;
   settledIds.clear();
   settlementPayouts.clear();
+  kycVerified = false;
 }
