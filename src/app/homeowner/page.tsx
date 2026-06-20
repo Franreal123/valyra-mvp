@@ -3,7 +3,7 @@ import { HomeownerWizard } from "@/components/homeowner/homeowner-wizard";
 
 export default function HomeownerPage() {
   return (
-    <main className="paper-texture min-h-screen">
+    <main className="min-h-screen bg-valyra-canvas">
       <AppHeader active="/homeowner" />
       <HomeownerWizard />
     </main>

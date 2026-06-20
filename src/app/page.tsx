@@ -31,7 +31,7 @@ const departments = [
 
 export default function LandingPage() {
   return (
-    <div className="paper-texture grain relative min-h-screen overflow-hidden text-valyra-ink">
+    <div className="relative min-h-screen overflow-hidden bg-valyra-canvas text-valyra-ink">
       <div className="relative z-10 mx-auto max-w-6xl px-6">
         {/* Masthead */}
         <header className="flex items-baseline justify-between py-6">
@@ -81,7 +81,7 @@ export default function LandingPage() {
             >
               <Link
                 href="/homeowner"
-                className="group inline-flex items-center gap-2 bg-valyra-ink px-7 py-4 font-mono text-xs uppercase tracking-[0.18em] text-valyra-paper transition-colors hover:bg-valyra-blue"
+                className="group inline-flex items-center gap-2 rounded-full bg-valyra-ink px-7 py-4 font-mono text-xs uppercase tracking-[0.18em] text-white transition-colors hover:bg-valyra-blue"
               >
                 Sell a share
                 <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -97,7 +97,7 @@ export default function LandingPage() {
 
             {/* Ticker stats */}
             <dl
-              className="anim-rise mt-14 flex flex-wrap gap-x-12 gap-y-5 border-t border-valyra-ink/15 pt-6"
+              className="anim-rise mt-14 flex flex-wrap gap-x-12 gap-y-5 border-t border-valyra-line pt-6"
               style={{ animationDelay: "0.36s" }}
             >
               <Stat k="Minimum" v="€100" />
@@ -114,12 +114,12 @@ export default function LandingPage() {
         </section>
 
         {/* Departments */}
-        <section className="border-t-2 border-valyra-ink pt-3">
-          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/50">
+        <section className="border-t border-valyra-line pt-3">
+          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/45">
             <span>The desk</span>
             <span>Three ways in</span>
           </div>
-          <div className="mt-2 grid grid-cols-1 divide-y divide-valyra-ink/15 md:grid-cols-3 md:divide-x md:divide-y-0">
+          <div className="mt-2 grid grid-cols-1 divide-y divide-valyra-line md:grid-cols-3 md:divide-x md:divide-y-0">
             {departments.map((d, i) => (
               <Link
                 key={d.href}
@@ -141,7 +141,7 @@ export default function LandingPage() {
         </section>
 
         {/* Footer */}
-        <footer className="mt-20 flex flex-col items-start justify-between gap-2 border-t border-valyra-ink/15 py-8 font-mono text-[11px] uppercase tracking-[0.16em] text-valyra-ink/50 sm:flex-row sm:items-center">
+        <footer className="mt-20 flex flex-col items-start justify-between gap-2 border-t border-valyra-line py-8 font-mono text-[11px] uppercase tracking-[0.16em] text-valyra-ink/50 sm:flex-row sm:items-center">
           <span>© 2026 Valyra — MVP demo</span>
           <span>Blockchain &amp; AVM valuation simulated</span>
         </footer>
@@ -164,7 +164,7 @@ function Certificate() {
   const tokens = Array.from({ length: 100 }, (_, i) => i < 10); // 10% filled
   return (
     <div className="anim-settle w-full max-w-[20rem]" style={{ animationDelay: "0.3s" }}>
-      <div className="relative -rotate-[1.5deg] border border-valyra-ink/70 bg-[#f7f1e6] p-5 shadow-[10px_10px_0_0_rgba(31,58,74,0.12)]">
+      <div className="relative -rotate-[1deg] rounded-2xl border border-valyra-line bg-white p-5 shadow-pop">
         <div className="flex items-center justify-between border-b border-dashed border-valyra-ink/30 pb-3 font-mono text-[9px] uppercase tracking-[0.2em] text-valyra-ink/60">
           <span>Tokenization Cert.</span>
           <span>VH-0001</span>
@@ -225,10 +225,10 @@ function CanalHouse() {
       strokeLinecap="round"
     >
       {/* body + bell gable */}
-      <rect x="22" y="54" width="80" height="94" fill="#efe5d8" />
+      <rect x="22" y="54" width="80" height="94" fill="#ffffff" />
       <path
         d="M22 54 V46 Q22 32 36 30 Q42 18 62 18 Q82 18 88 30 Q102 32 102 46 V54 Z"
-        fill="#efe5d8"
+        fill="#ffffff"
       />
       {/* hoisting beam at the apex */}
       <line x1="62" y1="18" x2="62" y2="9" />
@@ -239,14 +239,14 @@ function CanalHouse() {
       {[66, 92].map((y) =>
         [30, 53, 76].map((x) => (
           <g key={`${x}-${y}`}>
-            <rect x={x} y={y} width="16" height="18" fill="#f7f1e6" />
+            <rect x={x} y={y} width="16" height="18" fill="#ffffff" />
             <line x1={x + 8} y1={y} x2={x + 8} y2={y + 18} strokeWidth="1.2" />
             <line x1={x} y1={y + 9} x2={x + 16} y2={y + 9} strokeWidth="1.2" />
           </g>
         )),
       )}
       {/* door */}
-      <rect x="52" y="122" width="20" height="26" fill="#f7f1e6" />
+      <rect x="52" y="122" width="20" height="26" fill="#ffffff" />
       <line x1="62" y1="122" x2="62" y2="148" strokeWidth="1.2" />
     </svg>
   );

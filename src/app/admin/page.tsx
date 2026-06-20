@@ -3,7 +3,7 @@ import { AdminDashboard } from "@/components/admin/admin-dashboard";
 
 export default function AdminPage() {
   return (
-    <main className="paper-texture min-h-screen">
+    <main className="min-h-screen bg-valyra-canvas">
       <AppHeader active="/admin" />
       <AdminDashboard />
     </main>

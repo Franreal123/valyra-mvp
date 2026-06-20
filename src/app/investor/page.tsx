@@ -3,7 +3,7 @@ import { InvestorApp } from "@/components/investor/investor-app";
 
 export default function InvestorPage() {
   return (
-    <main className="paper-texture min-h-screen">
+    <main className="min-h-screen bg-valyra-canvas">
       <AppHeader active="/investor" />
       <InvestorApp />
     </main>
