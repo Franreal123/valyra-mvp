@@ -67,7 +67,7 @@ export function summarisePortfolio(
   }
 
   const positions: Position[] = [];
-  for (const [homeId, agg] of byHome) {
+  for (const [homeId, agg] of Array.from(byHome.entries())) {
     const home = homeById.get(homeId);
     if (!home) continue; // holding for an unknown home is skipped
     const currentValue = Math.round(agg.tokens * currentTokenPrice(home));
