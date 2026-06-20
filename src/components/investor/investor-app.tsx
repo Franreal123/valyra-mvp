@@ -1,43 +1,67 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { HomeCard } from "@/components/investor/home-card";
 import { BuyPanel } from "@/components/investor/buy-panel";
 import { KycGate } from "@/components/investor/kyc-gate";
 import { PortfolioView } from "@/components/investor/portfolio-view";
+import { SecondaryMarket } from "@/components/investor/secondary-market";
 import {
   getHomes,
   getActiveHomes,
-  getHoldings,
+  getUserHoldings,
+  getListings,
+  getHome,
   tokensAvailable,
   buyTokens,
+  buyListing,
   isKycVerified,
 } from "@/lib/store";
 import { summarisePortfolio } from "@/lib/market";
-import type { TokenizedHome } from "@/lib/types";
+import type { Listing, TokenizedHome } from "@/lib/types";
 
-type Tab = "market" | "portfolio";
+type Tab = "market" | "trade" | "portfolio";
+const TABS: { id: Tab; label: string }[] = [
+  { id: "market", label: "Marketplace" },
+  { id: "trade", label: "Trade" },
+  { id: "portfolio", label: "Portfolio" },
+];
 
 export function InvestorApp() {
   const [tab, setTab] = useState<Tab>("market");
-  // The store is the source of truth; `tick` forces a re-read after a buy.
+  // The store is the source of truth; `tick` forces a re-read after a mutation.
   const [, setTick] = useState(0);
   const [buying, setBuying] = useState<TokenizedHome | null>(null);
-  // Home the investor wants to buy but must verify (KYC) for first.
-  const [verifyingFor, setVerifyingFor] = useState<TokenizedHome | null>(null);
+  const [kycOpen, setKycOpen] = useState(false);
+  const pendingAfterKyc = useRef<(() => void) | null>(null);
 
   const verified = isKycVerified();
   const activeHomes = getActiveHomes(); // settled homes have left the market
-  const holdings = getHoldings();
-  // Value holdings against all homes (so a just-settled home can still resolve).
-  const summary = summarisePortfolio(holdings, getHomes());
+  const listings = getListings();
+  // Value the USER's holdings against all homes (settled ones still resolve).
+  const summary = summarisePortfolio(getUserHoldings(), getHomes());
 
-  // Gate the first purchase behind KYC; afterwards open the buy panel directly.
+  // Run `action` if verified; otherwise collect KYC first, then run it.
+  function requireKyc(action: () => void) {
+    if (isKycVerified()) action();
+    else {
+      pendingAfterKyc.current = action;
+      setKycOpen(true);
+    }
+  }
+
   function handleInvest(home: TokenizedHome) {
-    if (verified) setBuying(home);
-    else setVerifyingFor(home);
+    requireKyc(() => setBuying(home));
+  }
+
+  function handleBuyListing(listing: Listing) {
+    requireKyc(() => {
+      buyListing(listing.id);
+      setTick((t) => t + 1);
+      setTab("portfolio");
+    });
   }
 
   function confirmBuy(tokens: number) {
@@ -60,22 +84,22 @@ export function InvestorApp() {
           )}
         </div>
         <nav className="flex gap-1 rounded-full bg-valyra-ink/5 p-1">
-          {(["market", "portfolio"] as Tab[]).map((t) => (
+          {TABS.map((t) => (
             <button
-              key={t}
-              onClick={() => setTab(t)}
+              key={t.id}
+              onClick={() => setTab(t.id)}
               className={cn(
                 "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                tab === t ? "bg-white text-valyra-ink shadow-sm" : "text-valyra-ink/60",
+                tab === t.id ? "bg-white text-valyra-ink shadow-sm" : "text-valyra-ink/60",
               )}
             >
-              {t === "market" ? "Marketplace" : "Portfolio"}
+              {t.label}
             </button>
           ))}
         </nav>
       </div>
 
-      {tab === "market" ? (
+      {tab === "market" && (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {activeHomes.map((home) => (
             <HomeCard
@@ -86,9 +110,17 @@ export function InvestorApp() {
             />
           ))}
         </div>
-      ) : (
-        <PortfolioView summary={summary} />
       )}
+
+      {tab === "trade" && (
+        <SecondaryMarket
+          listings={listings}
+          homeById={getHome}
+          onBuy={handleBuyListing}
+        />
+      )}
+
+      {tab === "portfolio" && <PortfolioView summary={summary} />}
 
       {buying && (
         <BuyPanel
@@ -99,12 +131,18 @@ export function InvestorApp() {
         />
       )}
 
-      {verifyingFor && (
+      {kycOpen && (
         <KycGate
-          onClose={() => setVerifyingFor(null)}
+          onClose={() => {
+            pendingAfterKyc.current = null;
+            setKycOpen(false);
+          }}
           onDone={() => {
-            setBuying(verifyingFor);
-            setVerifyingFor(null);
+            setKycOpen(false);
+            const action = pendingAfterKyc.current;
+            pendingAfterKyc.current = null;
+            action?.();
+            setTick((t) => t + 1);
           }}
         />
       )}

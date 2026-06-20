@@ -16,6 +16,9 @@ import {
   resetDemo,
   isKycVerified,
   completeKyc,
+  getUserHoldings,
+  getListings,
+  buyListing,
 } from "@/lib/store";
 import { buildOffer } from "@/lib/contract";
 import type { PropertyInput, Valuation } from "@/lib/types";
@@ -106,7 +109,9 @@ describe("investor store", () => {
     settleHome("VH-0006");
     buyTokens("VH-0004", 50);
     resetDemo();
-    expect(getHoldings().length).toBe(4); // back to the 4 seed holdings
+    expect(getHoldings().length).toBe(6); // 4 user + 2 market holdings
+    expect(getUserHoldings().length).toBe(4); // only the user's
+    expect(getListings().length).toBe(2);
     expect(getSettledIds().length).toBe(0);
     expect(getActiveHomes().length).toBe(6); // all seed homes active again
   });
@@ -117,5 +122,35 @@ describe("investor store", () => {
     expect(isKycVerified()).toBe(true);
     resetDemo();
     expect(isKycVerified()).toBe(false);
+  });
+});
+
+describe("secondary market", () => {
+  it("buyListing transfers tokens from the market to you, supply unchanged", () => {
+    resetDemo(); // clean baseline
+    const listingsBefore = getListings().length;
+    const soldBefore = tokensSold("VH-0004");
+    const userBefore = getUserHoldings().length;
+
+    const h = buyListing("LST-0001"); // 1,500 @ €5.10
+    expect(h.owner).toBe("you");
+    expect(h.tokens).toBe(1_500);
+    expect(h.invested).toBe(7_650); // 1,500 × 5.10
+    expect(getListings().length).toBe(listingsBefore - 1);
+    // a transfer between holders — the home's sold supply does not change
+    expect(tokensSold("VH-0004")).toBe(soldBefore);
+    expect(getUserHoldings().length).toBe(userBefore + 1);
+    expect(getUserHoldings().some((x) => x.id === h.id)).toBe(true);
+  });
+
+  it("buyListing throws for an unknown listing", () => {
+    expect(() => buyListing("LST-9999")).toThrow();
+  });
+
+  it("gives consecutive secondary buys unique holding ids", () => {
+    resetDemo();
+    const a = buyListing("LST-0001");
+    const b = buyListing("LST-0002");
+    expect(a.id).not.toBe(b.id); // monotonic counter survives the splice
   });
 });
