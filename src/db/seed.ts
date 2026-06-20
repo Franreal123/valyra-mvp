@@ -1,4 +1,4 @@
-import type { TokenizedHome } from "@/lib/types";
+import type { Holding, TokenizedHome } from "@/lib/types";
 
 // Indicative NL residential €/m² levels (simulated, ~2026). Keys are lowercased.
 export const CITY_PRICES: Record<string, number> = {
@@ -42,5 +42,26 @@ export const seedHomes: TokenizedHome[] = [
     tokenPrice: 3.98,
     cashPaid: 31_824,
     signedAt: "2026-05-10T10:00:00.000Z",
+  },
+];
+
+// Pre-existing investor holdings so marketplace homes show partial funding.
+// invested = tokens × tokenPrice (the home's mint price at purchase).
+export const seedHoldings: Holding[] = [
+  {
+    id: "HLD-0001",
+    homeId: "VH-0001",
+    tokens: 3_000,
+    tokenPrice: 5.2,
+    invested: 15_600,
+    purchasedAt: "2026-05-04T09:00:00.000Z",
+  },
+  {
+    id: "HLD-0002",
+    homeId: "VH-0002",
+    tokens: 1_500,
+    tokenPrice: 3.98,
+    invested: 5_970,
+    purchasedAt: "2026-05-12T09:00:00.000Z",
   },
 ];

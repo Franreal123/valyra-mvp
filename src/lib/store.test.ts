@@ -1,5 +1,14 @@
 import { describe, it, expect } from "vitest";
-import { getHomes, signOffer, createApplication } from "@/lib/store";
+import {
+  getHomes,
+  signOffer,
+  createApplication,
+  getHoldings,
+  getHome,
+  tokensSold,
+  tokensAvailable,
+  buyTokens,
+} from "@/lib/store";
 import { buildOffer } from "@/lib/contract";
 import type { PropertyInput, Valuation } from "@/lib/types";
 
@@ -40,5 +49,32 @@ describe("store", () => {
     const app = createApplication(input, buildOffer(valuation, 10));
     expect(app.id).toMatch(/^APP-\d{4}$/);
     expect(app.offer.cashToday).toBe(42_500);
+  });
+});
+
+describe("investor store", () => {
+  it("starts with the seeded holdings", () => {
+    expect(getHoldings().length).toBeGreaterThanOrEqual(2);
+  });
+
+  it("tokensAvailable subtracts sold tokens from the mint count", () => {
+    const home = getHome("VH-0001");
+    expect(home).toBeDefined();
+    expect(tokensSold("VH-0001")).toBe(3000); // seed holding
+    expect(tokensAvailable(home!)).toBe(7000); // 10,000 − 3,000
+  });
+
+  it("buyTokens records a holding and reduces availability", () => {
+    const before = tokensAvailable(getHome("VH-0001")!);
+    const h = buyTokens("VH-0001", 100);
+    expect(h.id).toMatch(/^HLD-\d{4}$/);
+    expect(h.invested).toBe(520); // 100 × 5.2
+    expect(tokensAvailable(getHome("VH-0001")!)).toBe(before - 100);
+  });
+
+  it("buyTokens throws on unknown home or oversell", () => {
+    expect(() => buyTokens("VH-9999", 1)).toThrow();
+    const home = getHome("VH-0002")!;
+    expect(() => buyTokens("VH-0002", tokensAvailable(home) + 1)).toThrow();
   });
 });

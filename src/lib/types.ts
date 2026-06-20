@@ -51,3 +51,12 @@ export interface TokenizedHome {
   cashPaid: number;
   signedAt: string; // ISO
 }
+
+export interface Holding {
+  id: string; // e.g. "HLD-0001"
+  homeId: string; // FK -> TokenizedHome.id
+  tokens: number; // whole tokens bought
+  tokenPrice: number; // price paid per token at purchase (the mint price)
+  invested: number; // tokens × tokenPrice, EUR
+  purchasedAt: string; // ISO
+}
