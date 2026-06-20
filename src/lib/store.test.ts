@@ -8,6 +8,9 @@ import {
   tokensSold,
   tokensAvailable,
   buyTokens,
+  isSettled,
+  settleHome,
+  getSettledIds,
 } from "@/lib/store";
 import { buildOffer } from "@/lib/contract";
 import type { PropertyInput, Valuation } from "@/lib/types";
@@ -76,5 +79,16 @@ describe("investor store", () => {
     expect(() => buyTokens("VH-9999", 1)).toThrow();
     const home = getHome("VH-0002")!;
     expect(() => buyTokens("VH-0002", tokensAvailable(home) + 1)).toThrow();
+  });
+
+  it("settleHome marks a home settled and is reflected in queries", () => {
+    expect(isSettled("VH-0001")).toBe(false);
+    settleHome("VH-0001");
+    expect(isSettled("VH-0001")).toBe(true);
+    expect(getSettledIds()).toContain("VH-0001");
+  });
+
+  it("settleHome throws for an unknown home", () => {
+    expect(() => settleHome("VH-9999")).toThrow();
   });
 });

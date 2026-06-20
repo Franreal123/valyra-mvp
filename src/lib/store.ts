@@ -12,6 +12,7 @@ import type {
 const homes: TokenizedHome[] = [...seedHomes];
 const applications: Application[] = [];
 const holdings: Holding[] = [...seedHoldings];
+const settledIds = new Set<string>();
 
 function pad4(n: number): string {
   return String(n).padStart(4, "0");
@@ -81,4 +82,19 @@ export function buyTokens(homeId: string, tokens: number): Holding {
   };
   holdings.push(holding);
   return holding;
+}
+
+// --- Admin / settlement --------------------------------------------------
+
+export function isSettled(homeId: string): boolean {
+  return settledIds.has(homeId);
+}
+
+export function getSettledIds(): string[] {
+  return Array.from(settledIds);
+}
+
+export function settleHome(homeId: string): void {
+  if (!getHome(homeId)) throw new Error(`Unknown home: ${homeId}`);
+  settledIds.add(homeId);
 }

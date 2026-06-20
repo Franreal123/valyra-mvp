@@ -24,6 +24,11 @@ export function currentTokenPrice(home: TokenizedHome): number {
   return round2(home.tokenPrice * (1 + simulateAppreciationPct(home) / 100));
 }
 
+// Present full-home value: the tokenization valuation grown by appreciation.
+export function currentHomeValue(home: TokenizedHome): number {
+  return Math.round(home.valuation * (1 + simulateAppreciationPct(home) / 100));
+}
+
 // Fewest whole tokens that still clears the €100 minimum at this price.
 export function minTokens(tokenPrice: number): number {
   return Math.ceil(MIN_INVESTMENT_EUR / tokenPrice);

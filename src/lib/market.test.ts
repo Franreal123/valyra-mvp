@@ -3,6 +3,7 @@ import {
   MIN_INVESTMENT_EUR,
   simulateAppreciationPct,
   currentTokenPrice,
+  currentHomeValue,
   minTokens,
   tokensForAmount,
   summarisePortfolio,
@@ -33,6 +34,10 @@ describe("market math", () => {
   it("current token price applies appreciation to the mint price (2dp)", () => {
     expect(simulateAppreciationPct(home)).toBe(8); // VH-0001 -> 8%
     expect(currentTokenPrice(home)).toBe(5.62); // 5.2 × 1.08 = 5.616 -> 5.62
+  });
+
+  it("current home value applies appreciation to the valuation", () => {
+    expect(currentHomeValue(home)).toBe(660_960); // 612,000 × 1.08
   });
 
   it("minTokens enforces the €100 minimum", () => {
