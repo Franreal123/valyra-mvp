@@ -104,4 +104,15 @@ marketplace and admin overview.
 ⏭️ **Next:** swap the in-memory store (`src/lib/store.ts`) for Supabase behind the
 same interface; add persistence and auth.
 
-> Tests: `npm test` (34 unit tests, Vitest). Specs & plans live in `docs/superpowers/`.
+## Documentation
+
+| Doc | What it covers |
+| --- | --- |
+| [`docs/financial-model.md`](docs/financial-model.md) | HESA pricing, the 15% discount rationale, AVM, term/IRR scenarios, settlement, revenue model, assumptions |
+| [`docs/regulatory-note.md`](docs/regulatory-note.md) | NL/EU classification (MiFID II / Prospectus / MiCA), AFM/DNB, KYC/AML, retail protection, mortgage seniority |
+| [`docs/risk-register.md`](docs/risk-register.md) | Financial, legal, technical, and MVP-specific risks with mitigations |
+| [`docs/simulated-vs-real.md`](docs/simulated-vs-real.md) | Exactly what's faked vs. how it works in production |
+| [`docs/demo-script.md`](docs/demo-script.md) | ~2–3 minute end-to-end walkthrough |
+| `docs/superpowers/` | Design specs + implementation plans per feature |
+
+> Tests: `npm test` (40 unit tests, Vitest).
