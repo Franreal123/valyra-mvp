@@ -89,7 +89,7 @@ export default function LandingPage() {
           <div className="flex items-baseline gap-3">
             <span className="display text-3xl font-semibold">Valyra</span>
             <span className="hidden font-mono text-[10px] uppercase tracking-[0.25em] text-valyra-ink/50 sm:block">
-              Est. 2026 · Amsterdam
+              Est. 2026 · NL
             </span>
           </div>
           <nav className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.18em] sm:gap-7">

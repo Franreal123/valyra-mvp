@@ -9,6 +9,7 @@ import { BuyPanel } from "@/components/investor/buy-panel";
 import { KycGate } from "@/components/investor/kyc-gate";
 import { PortfolioView } from "@/components/investor/portfolio-view";
 import { SecondaryMarket } from "@/components/investor/secondary-market";
+import { HowItWorks } from "@/components/investor/how-it-works";
 import {
   getHomes,
   getActiveHomes,
@@ -23,11 +24,12 @@ import {
 import { summarisePortfolio } from "@/lib/market";
 import type { Listing, TokenizedHome } from "@/lib/types";
 
-type Tab = "market" | "trade" | "portfolio";
+type Tab = "market" | "trade" | "portfolio" | "learn";
 const TABS: { id: Tab; label: string }[] = [
   { id: "market", label: "Marketplace" },
   { id: "trade", label: "Trade" },
   { id: "portfolio", label: "Portfolio" },
+  { id: "learn", label: "How it works" },
 ];
 
 export function InvestorApp() {
@@ -78,7 +80,7 @@ export function InvestorApp() {
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-3">
           <h1 className="display text-4xl font-medium text-valyra-ink">
-            Marketplace
+            {TABS.find((t) => t.id === tab)?.label ?? "Marketplace"}
           </h1>
           {verified && (
             <span className="inline-flex items-center gap-1 rounded-full bg-valyra-lime/20 px-2 py-1 text-xs font-medium text-valyra-ink">
@@ -89,7 +91,7 @@ export function InvestorApp() {
         <nav
           role="tablist"
           aria-label="Investor views"
-          className="flex gap-1 self-start rounded-full bg-valyra-ink/5 p-1 sm:self-auto"
+          className="flex max-w-full gap-1 self-start overflow-x-auto rounded-full bg-valyra-ink/5 p-1 [scrollbar-width:none] sm:self-auto [&::-webkit-scrollbar]:hidden"
         >
           {TABS.map((t) => (
             <button
@@ -100,7 +102,7 @@ export function InvestorApp() {
               aria-controls={`panel-${t.id}`}
               onClick={() => setTab(t.id)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue",
+                "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue",
                 tab === t.id
                   ? "bg-white text-valyra-ink shadow-sm"
                   : "text-valyra-ink/60",
@@ -152,6 +154,12 @@ export function InvestorApp() {
           aria-labelledby="tab-portfolio"
         >
           <PortfolioView summary={summary} />
+        </div>
+      )}
+
+      {tab === "learn" && (
+        <div role="tabpanel" id="panel-learn" aria-labelledby="tab-learn">
+          <HowItWorks />
         </div>
       )}
 
