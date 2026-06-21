@@ -1,32 +1,63 @@
 import Link from "next/link";
-import { ArrowUpRight, Home, Coins, LineChart } from "lucide-react";
+import { ArrowUpRight, MapPin, Home, Layers, TrendingUp } from "lucide-react";
+import { seedHomes, seedHoldings, seedMarketHoldings } from "@/db/seed";
+import { simulateAppreciationPct, MIN_INVESTMENT_EUR } from "@/lib/market";
+import { formatEUR, formatEURPrecise } from "@/lib/format";
 
 // Landing page — server component. All motion is CSS (no client JS).
-// Aesthetic: warm Dutch canvas + a living "tokenized asset" card as the
-// signature — a canal house whose value curve draws itself on load and whose
-// ownership grid fills with tokens. Brand palette only (see tailwind.config).
+// Positioned as a real-estate brokerage: the live market of tokenized Dutch
+// homes is brought onto the page. Listings are derived from the same seed data
+// the app uses, so the front page and the marketplace always agree.
+// Brand palette only (see tailwind.config).
 
-const ways = [
+// Sold tokens per home (your holdings + the "market"), for the funded bars.
+const soldByHome = [...seedHoldings, ...seedMarketHoldings].reduce<
+  Record<string, number>
+>((acc, h) => {
+  acc[h.homeId] = (acc[h.homeId] ?? 0) + h.tokens;
+  return acc;
+}, {});
+
+const listings = seedHomes.map((h) => ({
+  id: h.id,
+  address: h.address,
+  city: h.city,
+  valuation: h.valuation,
+  tokenPrice: h.tokenPrice,
+  apprPct: simulateAppreciationPct(h),
+  fundedPct: Math.round(((soldByHome[h.id] ?? 0) / h.tokenCount) * 100),
+}));
+
+const marketValue = seedHomes.reduce((s, h) => s + h.valuation, 0);
+const avgAppr =
+  seedHomes.reduce((s, h) => s + simulateAppreciationPct(h), 0) /
+  seedHomes.length;
+
+const metrics = [
+  { k: "Homes listed", v: String(seedHomes.length) },
+  { k: "Market value", v: `€${(marketValue / 1e6).toFixed(2)}M` },
+  { k: "Avg. projected", v: `+${avgAppr.toFixed(1)}%/yr` },
+  { k: "Minimum ticket", v: formatEUR(MIN_INVESTMENT_EUR) },
+];
+
+const steps = [
   {
-    href: "/homeowner",
+    n: "01",
     icon: Home,
-    title: "Homeowners",
-    desc: "Turn a slice of your home's future value into cash today — no debt, no interest, no monthly payments.",
-    action: "Get an offer",
+    title: "Homeowner unlocks equity",
+    desc: "Apply, get an instant AVM valuation, and sell a slice (5–20%) of future appreciation for cash today — no debt, no monthly payments.",
   },
   {
-    href: "/investor",
-    icon: Coins,
-    title: "Investors",
-    desc: "Own fractional shares of Dutch homes and share in their appreciation. Build a portfolio from €100.",
-    action: "Browse the market",
+    n: "02",
+    icon: Layers,
+    title: "The home is tokenized",
+    desc: "Those appreciation rights become thousands of fractional tokens, each priced from a few euros.",
   },
   {
-    href: "/admin",
-    icon: LineChart,
-    title: "The desk",
-    desc: "The operator's view — capital raised and deployed, token supply, and per-home settlement.",
-    action: "Open the desk",
+    n: "03",
+    icon: TrendingUp,
+    title: "Investors fund & share the upside",
+    desc: "Buy tokens from €100, track value in a portfolio, and exit any time on the resale market.",
   },
 ] as const;
 
@@ -40,7 +71,7 @@ export default function LandingPage() {
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute -left-48 top-[28rem] h-[30rem] w-[30rem] rounded-full bg-valyra-blue/10 blur-3xl"
+        className="pointer-events-none absolute -left-48 top-[26rem] h-[30rem] w-[30rem] rounded-full bg-valyra-blue/10 blur-3xl"
       />
 
       <div className="relative z-10 mx-auto max-w-6xl px-6">
@@ -67,17 +98,17 @@ export default function LandingPage() {
         <div className="hairline anim-draw" />
 
         {/* Hero */}
-        <section className="grid grid-cols-1 items-center gap-12 py-12 lg:grid-cols-12 lg:py-20">
+        <section className="grid grid-cols-1 items-center gap-10 py-10 lg:grid-cols-12 lg:py-14">
           <div className="lg:col-span-7">
             <p
               className="anim-rise inline-flex items-center gap-2 rounded-full border border-valyra-line bg-white/60 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-valyra-blue"
               style={{ animationDelay: "0.05s" }}
             >
               <span className="inline-block h-1.5 w-1.5 rounded-full bg-valyra-lime" />
-              NL · Home-equity · Tokenized
+              The market for Dutch home equity
             </p>
             <h1
-              className="display anim-rise mt-6 text-[clamp(3rem,8vw,6.75rem)] font-light leading-[0.9]"
+              className="display anim-rise mt-6 text-[clamp(2.75rem,7vw,6rem)] font-light leading-[0.9]"
               style={{ animationDelay: "0.12s" }}
             >
               Home equity,
@@ -92,44 +123,33 @@ export default function LandingPage() {
               </span>
             </h1>
             <p
-              className="anim-rise mt-8 max-w-xl text-lg leading-relaxed text-valyra-ink/75"
+              className="anim-rise mt-7 max-w-xl text-lg leading-relaxed text-valyra-ink/75"
               style={{ animationDelay: "0.2s" }}
             >
-              Dutch homeowners sell a sliver of their home&apos;s future
-              appreciation for cash today — no debt, no interest. We tokenize
-              those rights so anyone can own a piece from{" "}
+              Homeowners sell a sliver of their home&apos;s future appreciation
+              for cash today — no debt, no interest. We tokenize those rights so
+              anyone can build a portfolio of Dutch property from{" "}
               <span className="font-mono font-medium text-valyra-ink">€100</span>.
             </p>
             <div
-              className="anim-rise mt-10 flex flex-wrap items-center gap-5"
+              className="anim-rise mt-9 flex flex-wrap items-center gap-5"
               style={{ animationDelay: "0.28s" }}
             >
               <Link
-                href="/homeowner"
+                href="/investor"
                 className="group inline-flex items-center gap-2 rounded-full bg-valyra-ink px-7 py-4 font-mono text-xs uppercase tracking-[0.18em] text-white shadow-pop transition-all hover:-translate-y-0.5 hover:bg-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-2 focus-visible:ring-offset-valyra-canvas"
               >
-                Sell a share
+                Browse the market
                 <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
               <Link
-                href="/investor"
+                href="/homeowner"
                 className="group inline-flex items-center gap-1.5 border-b border-valyra-ink/30 pb-1 font-mono text-xs uppercase tracking-[0.18em] transition-colors hover:border-valyra-blue hover:text-valyra-blue focus-visible:outline-none focus-visible:text-valyra-blue"
               >
-                Invest from €100
+                List your home
                 <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
-
-            {/* Trust stats */}
-            <dl
-              className="anim-rise mt-14 grid max-w-xl grid-cols-2 gap-x-10 gap-y-6 border-t border-valyra-line pt-6 sm:grid-cols-4"
-              style={{ animationDelay: "0.36s" }}
-            >
-              <Stat k="Minimum" v="€100" />
-              <Stat k="Interest" v="0%" />
-              <Stat k="Monthly debt" v="None" />
-              <Stat k="Exit" v="Resale market" />
-            </dl>
           </div>
 
           {/* Signature: living tokenized-asset card */}
@@ -138,30 +158,72 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Three ways in */}
-        <section className="pt-4">
-          <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/45">
-            <span>One platform</span>
-            <span>Three ways in</span>
+        {/* Market at a glance */}
+        <section
+          className="anim-rise grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-valyra-line bg-valyra-line sm:grid-cols-4"
+          style={{ animationDelay: "0.4s" }}
+          aria-label="Market at a glance"
+        >
+          {metrics.map((m) => (
+            <div key={m.k} className="bg-valyra-canvas px-6 py-5">
+              <p className="font-mono text-[10px] uppercase tracking-[0.16em] text-valyra-ink/45">
+                {m.k}
+              </p>
+              <p className="display mt-1 text-2xl text-valyra-ink sm:text-3xl">{m.v}</p>
+            </div>
+          ))}
+        </section>
+
+        {/* The market — live listings */}
+        <section className="mt-16">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-blue">
+                The market · Open for investment
+              </p>
+              <h2 className="display mt-2 text-3xl sm:text-4xl">Featured homes</h2>
+            </div>
+            <Link
+              href="/investor"
+              className="group hidden shrink-0 items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue hover:text-valyra-ink sm:inline-flex"
+            >
+              Browse all
+              <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
           </div>
-          <div className="mt-5 grid grid-cols-1 gap-4 md:grid-cols-3">
-            {ways.map((w, i) => (
-              <Link
-                key={w.href}
-                href={w.href}
-                className="group anim-rise relative flex flex-col rounded-2xl border border-valyra-line bg-white/70 p-7 transition-all hover:-translate-y-1 hover:border-valyra-blue/40 hover:bg-white hover:shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue"
-                style={{ animationDelay: `${0.45 + i * 0.08}s` }}
-              >
-                <span className="grid h-11 w-11 place-items-center rounded-xl bg-valyra-paper/70 text-valyra-blue transition-colors group-hover:bg-valyra-lime/25">
-                  <w.icon size={20} strokeWidth={1.75} />
-                </span>
-                <h3 className="display mt-5 text-2xl">{w.title}</h3>
-                <p className="mt-2 flex-1 text-sm leading-relaxed text-valyra-ink/70">{w.desc}</p>
-                <span className="mt-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue">
-                  {w.action}
-                  <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                </span>
-              </Link>
+
+          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {listings.map((l, i) => (
+              <ListingCard key={l.id} listing={l} delay={0.1 + i * 0.06} />
+            ))}
+          </div>
+
+          <Link
+            href="/investor"
+            className="group mt-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue hover:text-valyra-ink sm:hidden"
+          >
+            Browse the full market
+            <ArrowUpRight size={14} />
+          </Link>
+        </section>
+
+        {/* How it works */}
+        <section className="mt-16">
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/45">
+            How it works
+          </p>
+          <div className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-valyra-line bg-valyra-line md:grid-cols-3">
+            {steps.map((s) => (
+              <div key={s.n} className="flex flex-col bg-valyra-canvas p-7">
+                <div className="flex items-center justify-between">
+                  <span className="grid h-11 w-11 place-items-center rounded-xl bg-valyra-paper/70 text-valyra-blue">
+                    <s.icon size={20} strokeWidth={1.75} />
+                  </span>
+                  <span className="font-mono text-xs text-valyra-ink/35">{s.n}</span>
+                </div>
+                <h3 className="display mt-5 text-xl">{s.title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-valyra-ink/70">{s.desc}</p>
+              </div>
             ))}
           </div>
         </section>
@@ -182,7 +244,7 @@ export default function LandingPage() {
                 <br className="hidden sm:block" /> housing market — from €100.
               </h2>
             </div>
-            <div className="flex lg:col-span-4 lg:justify-end">
+            <div className="flex flex-col gap-3 lg:col-span-4 lg:items-end">
               <Link
                 href="/investor"
                 className="group inline-flex items-center gap-2 rounded-full bg-valyra-lime px-7 py-4 font-mono text-xs uppercase tracking-[0.18em] text-valyra-ink transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-lime focus-visible:ring-offset-2 focus-visible:ring-offset-valyra-ink"
@@ -190,12 +252,18 @@ export default function LandingPage() {
                 Browse the market
                 <ArrowUpRight size={16} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
+              <Link
+                href="/admin"
+                className="font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-canvas/60 transition-colors hover:text-valyra-lime focus-visible:outline-none focus-visible:text-valyra-lime"
+              >
+                Operator desk →
+              </Link>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="mt-16 flex flex-col items-start justify-between gap-2 border-t border-valyra-line py-8 font-mono text-[11px] uppercase tracking-[0.16em] text-valyra-ink/50 sm:flex-row sm:items-center">
+        <footer className="mt-14 flex flex-col items-start justify-between gap-2 border-t border-valyra-line py-8 font-mono text-[11px] uppercase tracking-[0.16em] text-valyra-ink/50 sm:flex-row sm:items-center">
           <span>© 2026 Valyra — MVP demo</span>
           <span>Blockchain &amp; AVM valuation simulated</span>
         </footer>
@@ -204,12 +272,56 @@ export default function LandingPage() {
   );
 }
 
-function Stat({ k, v }: { k: string; v: string }) {
+type Listing = {
+  id: string;
+  address: string;
+  city: string;
+  valuation: number;
+  tokenPrice: number;
+  apprPct: number;
+  fundedPct: number;
+};
+
+// A brokerage-style listing for one tokenized home, derived from seed data.
+function ListingCard({ listing, delay }: { listing: Listing; delay: number }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <dt className="font-mono text-[10px] uppercase tracking-[0.16em] text-valyra-ink/45">{k}</dt>
-      <dd className="font-mono text-sm font-medium text-valyra-ink">{v}</dd>
-    </div>
+    <Link
+      href="/investor"
+      className="group anim-rise flex flex-col rounded-2xl border border-valyra-line bg-white/80 p-5 transition-all hover:-translate-y-1 hover:border-valyra-blue/40 hover:bg-white hover:shadow-pop focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue"
+      style={{ animationDelay: `${delay}s` }}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="inline-flex items-center gap-1 font-mono text-[10px] uppercase tracking-[0.16em] text-valyra-ink/45">
+            <MapPin size={11} /> {listing.city}
+          </p>
+          <h3 className="display mt-1 text-xl leading-tight">{listing.address}</h3>
+        </div>
+        <span className="inline-flex shrink-0 items-center gap-1 rounded-full bg-valyra-lime/20 px-2 py-0.5 font-mono text-[10px] font-medium uppercase tracking-[0.1em] text-valyra-ink">
+          ▲ +{listing.apprPct}%/yr
+        </span>
+      </div>
+
+      <dl className="mt-4 grid grid-cols-2 gap-y-1 text-sm">
+        <dt className="text-valyra-ink/55">Valuation</dt>
+        <dd className="text-right font-medium tabular-nums">{formatEUR(listing.valuation)}</dd>
+        <dt className="text-valyra-ink/55">Token price</dt>
+        <dd className="text-right font-medium tabular-nums">{formatEURPrecise(listing.tokenPrice)}</dd>
+      </dl>
+
+      <div className="mt-4">
+        <div className="h-1.5 w-full overflow-hidden rounded-full bg-valyra-ink/10">
+          <div className="h-full rounded-full bg-valyra-blue" style={{ width: `${listing.fundedPct}%` }} />
+        </div>
+        <div className="mt-2 flex items-center justify-between font-mono text-[10px] uppercase tracking-[0.12em] text-valyra-ink/50">
+          <span>{listing.fundedPct}% funded</span>
+          <span className="inline-flex items-center gap-1 text-valyra-blue transition-colors group-hover:text-valyra-ink">
+            Invest from €100
+            <ArrowUpRight size={12} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+          </span>
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -278,7 +390,6 @@ function AssetCard() {
 
 // Climbing value curve with a soft area fill — the "appreciation" thesis.
 function AppreciationCurve() {
-  // A gently rising path, normalized to pathLength 1 for the draw animation.
   const line = "M4 56 C 40 52, 64 44, 96 34 S 168 14, 196 8";
   const area = `${line} L196 64 L4 64 Z`;
   return (
@@ -289,7 +400,6 @@ function AppreciationCurve() {
           <stop offset="100%" stopColor="#7fc242" stopOpacity="0" />
         </linearGradient>
       </defs>
-      {/* baseline */}
       <line x1="4" y1="63" x2="196" y2="63" stroke="#1f3a4a" strokeOpacity="0.12" strokeWidth="1" />
       <path d={area} fill="url(#valyra-area)" className="anim-area" />
       <path
@@ -327,18 +437,14 @@ function CanalHouse() {
       strokeLinejoin="round"
       strokeLinecap="round"
     >
-      {/* body + bell gable */}
       <rect x="22" y="54" width="80" height="94" fill="#ffffff" />
       <path
         d="M22 54 V46 Q22 32 36 30 Q42 18 62 18 Q82 18 88 30 Q102 32 102 46 V54 Z"
         fill="#ffffff"
       />
-      {/* hoisting beam at the apex */}
       <line x1="62" y1="18" x2="62" y2="9" />
       <path d="M57 9 h10" />
-      {/* cornice */}
       <line x1="17" y1="54" x2="107" y2="54" />
-      {/* windows: two rows of three, with muntins */}
       {[66, 92].map((y) =>
         [30, 53, 76].map((x) => (
           <g key={`${x}-${y}`}>
@@ -348,7 +454,6 @@ function CanalHouse() {
           </g>
         )),
       )}
-      {/* door */}
       <rect x="52" y="122" width="20" height="26" fill="#ffffff" />
       <line x1="62" y1="122" x2="62" y2="148" strokeWidth="1.2" />
     </svg>
