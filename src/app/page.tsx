@@ -28,6 +28,12 @@ const listings = seedHomes.map((h) => ({
   fundedPct: Math.round(((soldByHome[h.id] ?? 0) / h.tokenCount) * 100),
 }));
 
+const tickerItems = listings.map((l) => ({
+  address: l.address,
+  city: l.city,
+  pct: l.apprPct,
+}));
+
 const marketValue = seedHomes.reduce((s, h) => s + h.valuation, 0);
 const avgAppr =
   seedHomes.reduce((s, h) => s + simulateAppreciationPct(h), 0) /
@@ -84,7 +90,7 @@ export default function LandingPage() {
             </span>
           </div>
           <nav className="flex items-center gap-5 font-mono text-[11px] uppercase tracking-[0.18em] sm:gap-7">
-            <Link href="/homeowner" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
+            <Link href="/homeowner" className="hidden rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas sm:inline">
               Homeowners
             </Link>
             <Link href="/investor" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
@@ -93,12 +99,21 @@ export default function LandingPage() {
             <Link href="/admin" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
               Desk
             </Link>
+            <Link
+              href="/investor"
+              className="group hidden items-center gap-1.5 rounded-full bg-valyra-ink px-4 py-2 text-white transition-colors hover:bg-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-2 focus-visible:ring-offset-valyra-canvas sm:inline-flex"
+            >
+              Invest
+              <ArrowUpRight size={13} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
           </nav>
         </header>
-        <div className="hairline anim-draw" />
+
+        {/* Live market ticker */}
+        <MarketTicker />
 
         {/* Hero */}
-        <section className="grid grid-cols-1 items-center gap-10 py-10 lg:grid-cols-12 lg:py-14">
+        <section className="grid grid-cols-1 items-start gap-10 pt-10 pb-12 lg:grid-cols-12 lg:pt-14 lg:pb-16">
           <div className="lg:col-span-7">
             <p
               className="anim-rise inline-flex items-center gap-2 rounded-full border border-valyra-line bg-white/60 px-3 py-1 font-mono text-[11px] uppercase tracking-[0.22em] text-valyra-blue"
@@ -150,6 +165,19 @@ export default function LandingPage() {
                 <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
               </Link>
             </div>
+
+            {/* Value props */}
+            <ul
+              className="anim-rise mt-10 flex flex-wrap items-center gap-x-6 gap-y-2.5 font-mono text-[11px] uppercase tracking-[0.14em] text-valyra-ink/55"
+              style={{ animationDelay: "0.34s" }}
+            >
+              {["No debt", "0% interest", "Exit on resale", "AVM-priced"].map((t) => (
+                <li key={t} className="inline-flex items-center gap-2">
+                  <span className="h-1.5 w-1.5 rounded-full bg-valyra-lime" />
+                  {t}
+                </li>
+              ))}
+            </ul>
           </div>
 
           {/* Signature: living tokenized-asset card */}
@@ -267,6 +295,35 @@ export default function LandingPage() {
           <span>© 2026 Valyra — MVP demo</span>
           <span>Blockchain &amp; AVM valuation simulated</span>
         </footer>
+      </div>
+    </div>
+  );
+}
+
+// Scrolling "live market" ticker under the masthead — fills the top band and
+// signals an active market. Decorative (the real listings are below), so it's
+// hidden from assistive tech and pauses on hover / with reduced motion.
+function MarketTicker() {
+  return (
+    <div
+      aria-hidden
+      className="marquee-pause relative -mx-6 overflow-hidden border-y border-valyra-line bg-white/40"
+      style={{
+        maskImage:
+          "linear-gradient(to right, transparent, #000 5%, #000 95%, transparent)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent, #000 5%, #000 95%, transparent)",
+      }}
+    >
+      <div className="animate-marquee flex w-max items-center py-2.5 font-mono text-[11px] uppercase tracking-[0.14em]">
+        {[...tickerItems, ...tickerItems].map((t, i) => (
+          <span key={i} className="flex items-center gap-2.5 px-5">
+            <span className="text-valyra-ink/70">{t.address}</span>
+            <span className="text-valyra-ink/35">{t.city}</span>
+            <span className="font-medium text-valyra-blue">+{t.pct}%</span>
+            <span className="ml-2.5 h-1 w-1 rounded-full bg-valyra-ink/20" />
+          </span>
+        ))}
       </div>
     </div>
   );
