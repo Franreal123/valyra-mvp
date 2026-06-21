@@ -83,12 +83,61 @@ body {
   animation: settle 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
+/* Appreciation curve drawing itself on load (the growth story). The path
+   carries pathLength="1", so a dash of 1 covers the whole line. */
+@keyframes draw-line {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.anim-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-line 1.4s cubic-bezier(0.16, 1, 0.3, 1) 0.5s forwards;
+}
+
+@keyframes area-in {
+  to {
+    opacity: 1;
+  }
+}
+
+.anim-area {
+  opacity: 0;
+  animation: area-in 0.8s ease-out 1.2s forwards;
+}
+
+/* Token cells popping into the ownership grid. */
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anim-pop {
+  opacity: 0;
+  animation: pop 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .anim-rise,
   .anim-draw,
-  .anim-settle {
+  .anim-settle,
+  .anim-area,
+  .anim-pop {
     animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  .anim-line {
+    animation: none;
+    stroke-dashoffset: 0;
   }
 }
