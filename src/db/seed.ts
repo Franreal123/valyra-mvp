@@ -12,89 +12,80 @@ export const CITY_PRICES: Record<string, number> = {
   almere: 3700,
   breda: 3900,
   nijmegen: 3900,
+  haarlem: 4900,
+  leiden: 4700,
+  delft: 4500,
+  maastricht: 4000,
+  arnhem: 3700,
 };
 
 export const NATIONAL_AVG_PRICE_M2 = 4000;
 
-// Pre-tokenized homes so the (later) marketplace isn't empty.
-// Numbers follow the locked model: cash = share × value × 0.85; tokens = share × 1000.
-export const seedHomes: TokenizedHome[] = [
-  {
-    id: "VH-0001",
-    contractRef: "VLY-2026-VH-0001",
-    address: "Prinsengracht 263",
-    city: "Amsterdam",
-    valuation: 612_000,
-    sharePct: 10,
-    tokenCount: 10_000,
-    tokenPrice: 5.2,
-    cashPaid: 52_020,
-    signedAt: "2026-05-02T10:00:00.000Z",
-  },
-  {
-    id: "VH-0002",
-    contractRef: "VLY-2026-VH-0002",
-    address: "Oudegracht 12",
-    city: "Utrecht",
-    valuation: 468_000,
-    sharePct: 8,
-    tokenCount: 8_000,
-    tokenPrice: 3.98,
-    cashPaid: 31_824,
-    signedAt: "2026-05-10T10:00:00.000Z",
-  },
-  {
-    id: "VH-0003",
-    contractRef: "VLY-2026-VH-0003",
-    address: "Witte de Withstraat 44",
-    city: "Rotterdam",
-    valuation: 400_000,
-    sharePct: 10,
-    tokenCount: 10_000,
-    tokenPrice: 3.4, // 34,000 / 10,000
-    cashPaid: 34_000, // 0.10 × 400,000 × 0.85
-    signedAt: "2026-05-14T10:00:00.000Z",
-  },
-  {
-    id: "VH-0004",
-    contractRef: "VLY-2026-VH-0004",
-    address: "Denneweg 7",
-    city: "Den Haag",
-    valuation: 560_000,
-    sharePct: 8,
-    tokenCount: 8_000,
-    tokenPrice: 4.76, // 38,080 / 8,000
-    cashPaid: 38_080, // 0.08 × 560,000 × 0.85
-    signedAt: "2026-05-18T10:00:00.000Z",
-  },
-  {
-    id: "VH-0005",
-    contractRef: "VLY-2026-VH-0005",
-    address: "Stratumseind 21",
-    city: "Eindhoven",
-    valuation: 340_000,
-    sharePct: 15,
-    tokenCount: 15_000,
-    tokenPrice: 2.89, // 43,350 / 15,000
-    cashPaid: 43_350, // 0.15 × 340,000 × 0.85
-    signedAt: "2026-05-22T10:00:00.000Z",
-  },
-  {
-    id: "VH-0006",
-    contractRef: "VLY-2026-VH-0006",
-    address: "Folkingestraat 9",
-    city: "Groningen",
-    valuation: 300_000,
-    sharePct: 12,
-    tokenCount: 12_000,
-    tokenPrice: 2.55, // 30,600 / 12,000
-    cashPaid: 30_600, // 0.12 × 300,000 × 0.85
-    signedAt: "2026-05-26T10:00:00.000Z",
-  },
+// Build a tokenized home from the locked model so every seed home is internally
+// consistent (see seed.test.ts):
+//   tokenCount = sharePct × 1000
+//   cashPaid   = round(sharePct% × valuation × 0.85)   (15% risk discount)
+//   tokenPrice = 2dp-rounded unit price of cashPaid
+function makeHome(
+  id: string,
+  address: string,
+  city: string,
+  valuation: number,
+  sharePct: number,
+  signedAt: string,
+): TokenizedHome {
+  const tokenCount = sharePct * 1000;
+  const cashPaid = Math.round((sharePct / 100) * valuation * 0.85);
+  const tokenPrice = Math.round((cashPaid / tokenCount) * 100) / 100;
+  return {
+    id,
+    contractRef: `VLY-2026-${id}`,
+    address,
+    city,
+    valuation,
+    sharePct,
+    tokenCount,
+    tokenPrice,
+    cashPaid,
+    signedAt,
+  };
+}
+
+// [id, address, city, valuation, sharePct, signedAt]
+const HOMES: ReadonlyArray<
+  [string, string, string, number, number, string]
+> = [
+  ["VH-0001", "Prinsengracht 263", "Amsterdam", 612_000, 10, "2026-05-02T10:00:00.000Z"],
+  ["VH-0002", "Oudegracht 12", "Utrecht", 468_000, 8, "2026-05-10T10:00:00.000Z"],
+  ["VH-0003", "Witte de Withstraat 44", "Rotterdam", 400_000, 10, "2026-05-14T10:00:00.000Z"],
+  ["VH-0004", "Denneweg 7", "Den Haag", 560_000, 8, "2026-05-18T10:00:00.000Z"],
+  ["VH-0005", "Stratumseind 21", "Eindhoven", 340_000, 15, "2026-05-22T10:00:00.000Z"],
+  ["VH-0006", "Folkingestraat 9", "Groningen", 300_000, 12, "2026-05-26T10:00:00.000Z"],
+  ["VH-0007", "Keizersgracht 401", "Amsterdam", 845_000, 8, "2026-05-28T10:00:00.000Z"],
+  ["VH-0008", "Vondelstraat 14", "Amsterdam", 720_000, 6, "2026-05-29T10:00:00.000Z"],
+  ["VH-0009", "Egelantiersgracht 22", "Amsterdam", 565_000, 10, "2026-05-30T10:00:00.000Z"],
+  ["VH-0010", "Nieuwe Binnenweg 120", "Rotterdam", 318_000, 12, "2026-06-01T10:00:00.000Z"],
+  ["VH-0011", "Kralingse Plaslaan 5", "Rotterdam", 489_000, 9, "2026-06-02T10:00:00.000Z"],
+  ["VH-0012", "Lange Voorhout 30", "Den Haag", 905_000, 7, "2026-06-03T10:00:00.000Z"],
+  ["VH-0013", "Prins Hendrikstraat 11", "Den Haag", 372_000, 12, "2026-06-04T10:00:00.000Z"],
+  ["VH-0014", "Twijnstraat 6", "Utrecht", 535_000, 10, "2026-06-05T10:00:00.000Z"],
+  ["VH-0015", "Biltstraat 90", "Utrecht", 410_000, 11, "2026-06-06T10:00:00.000Z"],
+  ["VH-0016", "Grote Markt 3", "Haarlem", 612_000, 8, "2026-06-07T10:00:00.000Z"],
+  ["VH-0017", "Botermarkt 19", "Leiden", 458_000, 10, "2026-06-08T10:00:00.000Z"],
+  ["VH-0018", "Oude Delft 50", "Delft", 521_000, 9, "2026-06-09T10:00:00.000Z"],
+  ["VH-0019", "Vrijthof 7", "Maastricht", 398_000, 12, "2026-06-10T10:00:00.000Z"],
+  ["VH-0020", "Stevenskerkhof 2", "Nijmegen", 286_000, 14, "2026-06-11T10:00:00.000Z"],
+  ["VH-0021", "Korenmarkt 8", "Arnhem", 312_000, 13, "2026-06-12T10:00:00.000Z"],
+  ["VH-0022", "Heuvel 15", "Tilburg", 268_000, 15, "2026-06-13T10:00:00.000Z"],
+  ["VH-0023", "Esplanade 4", "Almere", 332_000, 11, "2026-06-14T10:00:00.000Z"],
+  ["VH-0024", "Ginnekenstraat 40", "Breda", 354_000, 12, "2026-06-15T10:00:00.000Z"],
 ];
 
-// Pre-existing investor holdings so marketplace homes show partial funding.
-// invested = tokens × tokenPrice (the home's mint price at purchase).
+// Pre-tokenized homes so the marketplace looks like a live, populated market.
+export const seedHomes: TokenizedHome[] = HOMES.map((h) => makeHome(...h));
+
+// Pre-existing investor (you) holdings so some homes show partial funding and
+// the portfolio isn't empty. invested = tokens × the home's mint price.
 export const seedHoldings: Holding[] = [
   {
     id: "HLD-0001",
@@ -130,28 +121,49 @@ export const seedHoldings: Holding[] = [
   },
 ];
 
-// Tokens held by OTHER investors ("the market"). They back secondary listings
-// and count toward a home's sold supply, but never appear in your portfolio.
-export const seedMarketHoldings: Holding[] = [
-  {
-    id: "MKT-0001",
-    homeId: "VH-0004",
-    tokens: 1_500,
-    tokenPrice: 4.76,
-    invested: 7_140,
-    purchasedAt: "2026-05-19T09:00:00.000Z",
+// Tokens held by OTHER investors ("the market"). They give homes a realistic
+// spread of funding levels, back secondary listings, and count toward a home's
+// sold supply — but never appear in your portfolio.
+function marketHolding(
+  id: string,
+  homeId: string,
+  tokens: number,
+  purchasedAt: string,
+): Holding {
+  const home = seedHomes.find((h) => h.id === homeId);
+  if (!home) throw new Error(`seed: unknown home ${homeId}`);
+  return {
+    id,
+    homeId,
+    tokens,
+    tokenPrice: home.tokenPrice,
+    invested: Math.round(tokens * home.tokenPrice),
+    purchasedAt,
     owner: "market",
-  },
-  {
-    id: "MKT-0002",
-    homeId: "VH-0006",
-    tokens: 2_000,
-    tokenPrice: 2.55,
-    invested: 5_100,
-    purchasedAt: "2026-05-27T09:00:00.000Z",
-    owner: "market",
-  },
+  };
+}
+
+// [id, homeId, tokens, purchasedAt]. VH-0004 and VH-0006 back the two listings.
+const MARKET: ReadonlyArray<[string, string, number, string]> = [
+  ["MKT-0001", "VH-0004", 1_500, "2026-05-19T09:00:00.000Z"],
+  ["MKT-0002", "VH-0006", 2_000, "2026-05-27T09:00:00.000Z"],
+  ["MKT-0003", "VH-0007", 2_400, "2026-05-30T09:00:00.000Z"],
+  ["MKT-0004", "VH-0008", 900, "2026-05-31T09:00:00.000Z"],
+  ["MKT-0005", "VH-0009", 5_500, "2026-06-01T09:00:00.000Z"],
+  ["MKT-0006", "VH-0010", 2_000, "2026-06-02T09:00:00.000Z"],
+  ["MKT-0007", "VH-0011", 3_600, "2026-06-03T09:00:00.000Z"],
+  ["MKT-0008", "VH-0012", 1_400, "2026-06-04T09:00:00.000Z"],
+  ["MKT-0009", "VH-0013", 3_000, "2026-06-05T09:00:00.000Z"],
+  ["MKT-0010", "VH-0014", 6_000, "2026-06-06T09:00:00.000Z"],
+  ["MKT-0011", "VH-0015", 1_100, "2026-06-07T09:00:00.000Z"],
+  ["MKT-0012", "VH-0016", 2_800, "2026-06-08T09:00:00.000Z"],
+  ["MKT-0013", "VH-0017", 4_500, "2026-06-09T09:00:00.000Z"],
+  ["MKT-0014", "VH-0018", 1_800, "2026-06-10T09:00:00.000Z"],
+  ["MKT-0015", "VH-0019", 3_600, "2026-06-11T09:00:00.000Z"],
+  ["MKT-0016", "VH-0020", 7_000, "2026-06-12T09:00:00.000Z"],
 ];
+
+export const seedMarketHoldings: Holding[] = MARKET.map((m) => marketHolding(...m));
 
 // Secondary-market SELL orders, backed 1:1 by the market holdings above. Prices
 // sit near each home's current token price (a small discount / premium).

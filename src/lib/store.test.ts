@@ -109,11 +109,11 @@ describe("investor store", () => {
     settleHome("VH-0006");
     buyTokens("VH-0004", 50);
     resetDemo();
-    expect(getHoldings().length).toBe(6); // 4 user + 2 market holdings
+    expect(getHoldings().length).toBe(20); // 4 user + 16 market holdings
     expect(getUserHoldings().length).toBe(4); // only the user's
     expect(getListings().length).toBe(2);
     expect(getSettledIds().length).toBe(0);
-    expect(getActiveHomes().length).toBe(6); // all seed homes active again
+    expect(getActiveHomes().length).toBe(24); // all seed homes active again
   });
 
   it("KYC starts unverified, completeKyc verifies, resetDemo clears it", () => {
