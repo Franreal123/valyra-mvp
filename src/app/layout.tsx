@@ -26,9 +26,37 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "Valyra — Home equity, unlocked",
+  metadataBase: new URL("https://valyra-mvp.vercel.app"),
+  title: {
+    default: "Valyra — Home equity, unlocked",
+    template: "%s · Valyra",
+  },
   description:
     "Valyra lets Dutch homeowners unlock cash from their home's future appreciation — no debt, no interest — and lets retail investors buy fractional, tokenized shares from €100.",
+  keywords: [
+    "FinTech",
+    "tokenization",
+    "home equity",
+    "HESA",
+    "real estate",
+    "Netherlands",
+    "fractional investing",
+  ],
+  authors: [{ name: "Valyra" }],
+  openGraph: {
+    title: "Valyra — Home equity, unlocked",
+    description:
+      "Tokenized Dutch home-equity sharing. Homeowners unlock cash from future appreciation; investors buy fractional shares from €100.",
+    siteName: "Valyra",
+    type: "website",
+    locale: "en_NL",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Valyra — Home equity, unlocked",
+    description:
+      "Tokenized Dutch home-equity sharing — invest in residential appreciation from €100.",
+  },
 };
 
 export default function RootLayout({

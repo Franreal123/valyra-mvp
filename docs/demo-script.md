@@ -20,11 +20,14 @@ owner, funded by investors, and settled by the operator — one shared system.
 
 ## 2. Investor — buy a fraction (45s)
 - Go to **Investors**. The home you just signed is now in the **Marketplace**
-  (alongside 6 seeded homes across NL cities).
+  (alongside ~24 seeded homes across NL cities — a populated market).
 - Click **Invest** on one. Enter €500.
 - Show the **10-year projection**: *Bear / Base / Bull with IRR* — "the downside is
   disclosed; tokens can fall as well as rise."
-- Confirm → land in **Portfolio**: position, current value, gain, allocation donut.
+- Confirm → land in **Portfolio**: a KPI strip (value, return, projected yield),
+  allocation donut, one-year outlook, and the positions table.
+- Point at the **How it works** tab: the product mechanic, fees, and the full
+  risk + legal/regulatory disclosures live in-app.
 
 ## 3. Operator — oversee & settle (30s)
 - Go to **Desk**. KPIs: capital raised to homeowners, capital deployed by investors,
