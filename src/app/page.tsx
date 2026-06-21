@@ -99,7 +99,10 @@ export default function LandingPage() {
             <Link href="/investor" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
               Investors
             </Link>
-            <Link href="/admin" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
+            <Link href="/how-it-works" className="rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas">
+              How it works
+            </Link>
+            <Link href="/admin" className="hidden rounded-sm transition-colors hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue focus-visible:ring-offset-4 focus-visible:ring-offset-valyra-canvas sm:inline">
               Desk
             </Link>
             <Link
@@ -240,9 +243,18 @@ export default function LandingPage() {
 
         {/* How it works */}
         <section className="mt-16">
-          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/45">
-            How it works
-          </p>
+          <div className="flex items-end justify-between gap-4">
+            <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-valyra-ink/45">
+              How it works
+            </p>
+            <Link
+              href="/how-it-works"
+              className="group inline-flex shrink-0 items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue hover:text-valyra-ink"
+            >
+              Full details &amp; legal
+              <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </Link>
+          </div>
           <div className="mt-5 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-valyra-line bg-valyra-line md:grid-cols-3">
             {steps.map((s) => (
               <div key={s.n} className="flex flex-col bg-valyra-canvas p-7">

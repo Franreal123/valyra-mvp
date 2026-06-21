@@ -9,7 +9,6 @@ import { BuyPanel } from "@/components/investor/buy-panel";
 import { KycGate } from "@/components/investor/kyc-gate";
 import { PortfolioView } from "@/components/investor/portfolio-view";
 import { SecondaryMarket } from "@/components/investor/secondary-market";
-import { HowItWorks } from "@/components/investor/how-it-works";
 import {
   getHomes,
   getActiveHomes,
@@ -24,12 +23,11 @@ import {
 import { summarisePortfolio } from "@/lib/market";
 import type { Listing, TokenizedHome } from "@/lib/types";
 
-type Tab = "market" | "trade" | "portfolio" | "learn";
+type Tab = "market" | "trade" | "portfolio";
 const TABS: { id: Tab; label: string }[] = [
   { id: "market", label: "Marketplace" },
   { id: "trade", label: "Trade" },
   { id: "portfolio", label: "Portfolio" },
-  { id: "learn", label: "How it works" },
 ];
 
 export function InvestorApp() {
@@ -91,7 +89,7 @@ export function InvestorApp() {
         <nav
           role="tablist"
           aria-label="Investor views"
-          className="flex max-w-full gap-1 self-start overflow-x-auto rounded-full bg-valyra-ink/5 p-1 [scrollbar-width:none] sm:self-auto [&::-webkit-scrollbar]:hidden"
+          className="flex gap-1 self-start rounded-full bg-valyra-ink/5 p-1 sm:self-auto"
         >
           {TABS.map((t) => (
             <button
@@ -102,7 +100,7 @@ export function InvestorApp() {
               aria-controls={`panel-${t.id}`}
               onClick={() => setTab(t.id)}
               className={cn(
-                "whitespace-nowrap rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue",
+                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue",
                 tab === t.id
                   ? "bg-white text-valyra-ink shadow-sm"
                   : "text-valyra-ink/60",
@@ -159,12 +157,6 @@ export function InvestorApp() {
           aria-labelledby="tab-portfolio"
         >
           <PortfolioView summary={summary} />
-        </div>
-      )}
-
-      {tab === "learn" && (
-        <div role="tabpanel" id="panel-learn" aria-labelledby="tab-learn">
-          <HowItWorks />
         </div>
       )}
 

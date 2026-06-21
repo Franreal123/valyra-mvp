@@ -49,13 +49,15 @@ it instantly appears in the investor marketplace and the operator desk.
 | Flow | Route | What you can do |
 | --- | --- | --- |
 | **Homeowner** | `/homeowner` | Apply → get an AVM valuation (with confidence band & "how we valued this") → see the cash offer → sign. The home is tokenized. |
-| **Investor** | `/investor` | Browse a market of 24 tokenized homes → pass a simulated KYC/suitability gate → buy fractional tokens from €100 → track a portfolio dashboard (KPIs, allocation, one-year outlook) → resell on the secondary market → read an in-app **How it works** tab with the full risk & legal disclosures. |
+| **Investor** | `/investor` | Browse a market of 24 tokenized homes → pass a simulated KYC/suitability gate → buy fractional tokens from €100 → track a portfolio dashboard (KPIs, allocation, one-year outlook) → resell on the secondary market. |
+| **How it works** | `/how-it-works` | A dedicated page (in the primary nav) with the product mechanic, economics & fees, returns & a capital-at-risk warning, eligibility/KYC, and the full **legal & regulatory** disclosures. |
 | **Operator (Desk)** | `/admin` | Platform KPIs (capital raised/deployed, funded %, token supply) and per-home **settlement** (buy out token holders at current value). |
 
 <p align="center">
-  <img src="docs/assets/homeowner.png" alt="Homeowner wizard" width="32%">
-  <img src="docs/assets/investor.png" alt="Investor marketplace" width="32%">
-  <img src="docs/assets/admin.png" alt="Operator desk" width="32%">
+  <img src="docs/assets/homeowner.png" alt="Homeowner wizard" width="24%">
+  <img src="docs/assets/investor.png" alt="Investor marketplace" width="24%">
+  <img src="docs/assets/how-it-works.png" alt="How it works page" width="24%">
+  <img src="docs/assets/admin.png" alt="Operator desk" width="24%">
 </p>
 
 ## How the innovation maps to code

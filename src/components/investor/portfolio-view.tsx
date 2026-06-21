@@ -128,7 +128,7 @@ export function PortfolioView({ summary }: { summary: PortfolioSummary }) {
       <p className="text-[11px] leading-relaxed text-valyra-ink/45">
         Values reflect simulated appreciation and are illustrative only. Tokens
         track each home&apos;s value, which can fall as well as rise — see the
-        How it works tab for the full risk and legal disclosures.
+        How it works page for the full risk and legal disclosures.
       </p>
     </div>
   );
