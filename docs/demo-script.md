@@ -26,8 +26,8 @@ owner, funded by investors, and settled by the operator — one shared system.
   disclosed; tokens can fall as well as rise."
 - Confirm → land in **Portfolio**: a KPI strip (value, return, projected yield),
   allocation donut, one-year outlook, and the positions table.
-- Point at the **How it works** tab: the product mechanic, fees, and the full
-  risk + legal/regulatory disclosures live in-app.
+- Open the **How it works** page (top nav, next to Homeowners/Investors): the
+  product mechanic, fees, and the full risk + legal/regulatory disclosures.
 
 ## 3. Operator — oversee & settle (30s)
 - Go to **Desk**. KPIs: capital raised to homeowners, capital deployed by investors,
