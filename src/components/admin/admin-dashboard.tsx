@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import { CheckCircle2, RotateCcw, X } from "lucide-react";
-import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Modal } from "@/components/ui/modal";
 import { StatCard } from "@/components/admin/stat-card";
 import {
   getHomes,
@@ -46,11 +46,13 @@ export function AdminDashboard() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-8 flex items-center justify-between gap-4">
-        <h1 className="display text-4xl font-medium text-valyra-ink">Platform overview</h1>
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+        <h1 className="display text-4xl font-medium text-valyra-ink">
+          Platform overview
+        </h1>
         <button
           onClick={handleReset}
-          className="inline-flex items-center gap-1.5 rounded-full border border-valyra-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-valyra-ink/60 hover:border-valyra-blue hover:text-valyra-blue"
+          className="inline-flex items-center gap-1.5 rounded-full border border-valyra-ink/15 px-3 py-1.5 font-mono text-[11px] uppercase tracking-[0.14em] text-valyra-ink/60 hover:border-valyra-blue hover:text-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue"
         >
           <RotateCcw size={13} /> Reset demo
         </button>
@@ -59,7 +61,11 @@ export function AdminDashboard() {
       {/* KPIs */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Homes tokenized" value={String(stats.homesCount)} />
-        <StatCard label="Capital raised" value={formatEUR(stats.capitalRaised)} sub="paid to homeowners" />
+        <StatCard
+          label="Capital raised"
+          value={formatEUR(stats.capitalRaised)}
+          sub="paid to homeowners"
+        />
         <StatCard
           label="Capital deployed"
           value={formatEUR(stats.capitalDeployed)}
@@ -73,7 +79,9 @@ export function AdminDashboard() {
       </div>
 
       {/* Homes & settlement */}
-      <h2 className="display mb-3 mt-10 text-xl font-medium text-valyra-ink">Homes &amp; settlement</h2>
+      <h2 className="display mb-3 mt-10 text-xl font-medium text-valyra-ink">
+        Homes &amp; settlement
+      </h2>
       <Card className="overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
@@ -88,24 +96,39 @@ export function AdminDashboard() {
           <tbody>
             {homes.map((home) => {
               const settled = isSettled(home.id);
-              const funded = Math.round((tokensSold(home.id) / home.tokenCount) * 100);
+              const funded = Math.round(
+                (tokensSold(home.id) / home.tokenCount) * 100,
+              );
               // Live buy-out cost while open; the recorded amount once settled.
               const payout = settled
                 ? getSettlementPayout(home.id)
                 : settlementQuote(home, holdings).payout;
               return (
-                <tr key={home.id} className="border-b border-valyra-ink/5 last:border-0">
+                <tr
+                  key={home.id}
+                  className="border-b border-valyra-ink/5 last:border-0"
+                >
                   <td className="py-3">
-                    <span className="font-medium text-valyra-ink">{home.address}</span>
+                    <span className="font-medium text-valyra-ink">
+                      {home.address}
+                    </span>
                     <span className="block text-xs text-valyra-ink/50">
                       {home.city} · {home.id}
                     </span>
                   </td>
-                  <td className="py-3 text-right text-valyra-ink">{formatEUR(currentHomeValue(home))}</td>
-                  <td className="py-3 text-right text-valyra-ink">{settled ? "—" : `${funded}%`}</td>
+                  <td className="py-3 text-right text-valyra-ink">
+                    {formatEUR(currentHomeValue(home))}
+                  </td>
+                  <td className="py-3 text-right text-valyra-ink">
+                    {settled ? "—" : `${funded}%`}
+                  </td>
                   <td className="py-3 text-right text-valyra-ink">
                     {formatEUR(payout)}
-                    {settled && <span className="block text-[10px] uppercase tracking-wide text-valyra-ink/40">paid out</span>}
+                    {settled && (
+                      <span className="block text-[10px] uppercase tracking-wide text-valyra-ink/40">
+                        paid out
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 text-right">
                     {settled ? (
@@ -115,7 +138,8 @@ export function AdminDashboard() {
                     ) : (
                       <button
                         onClick={() => setSettling(home)}
-                        className="rounded-full border border-valyra-ink/15 px-3 py-1 text-xs font-medium text-valyra-blue hover:border-valyra-blue"
+                        aria-label={`Settle ${home.address}`}
+                        className="rounded-full border border-valyra-ink/15 px-3 py-1 text-xs font-medium text-valyra-blue hover:border-valyra-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue"
                       >
                         Settle
                       </button>
@@ -130,27 +154,36 @@ export function AdminDashboard() {
 
       {/* Settle confirmation */}
       {settling && quote && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-valyra-ink/40 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
-            <div className="mb-4 flex items-start justify-between">
-              <h2 className="text-lg font-semibold text-valyra-ink">Settle {settling.address}</h2>
-              <button onClick={() => setSettling(null)} aria-label="Close" className="text-valyra-ink/40 hover:text-valyra-ink">
-                <X size={20} />
-              </button>
-            </div>
-            <p className="text-sm text-valyra-ink/70">
-              Settling buys out all {quote.tokensHeld.toLocaleString("nl-NL")} investor-held
-              tokens at the current value. Token holders receive:
-            </p>
-            <p className="mt-3 text-3xl font-semibold text-valyra-ink">{formatEUR(quote.payout)}</p>
-            <div className={cn("mt-5 flex justify-end gap-2")}>
-              <Button variant="ghost" onClick={() => setSettling(null)}>
-                Cancel
-              </Button>
-              <Button onClick={confirmSettle}>Confirm settlement</Button>
-            </div>
+        <Modal titleId="settle-title" onClose={() => setSettling(null)}>
+          <div className="mb-4 flex items-start justify-between">
+            <h2
+              id="settle-title"
+              className="text-lg font-semibold text-valyra-ink"
+            >
+              Settle {settling.address}
+            </h2>
+            <button
+              onClick={() => setSettling(null)}
+              aria-label="Close"
+              className="text-valyra-ink/40 hover:text-valyra-ink"
+            >
+              <X size={20} />
+            </button>
           </div>
-        </div>
+          <p className="text-sm text-valyra-ink/70">
+            Settling buys out all {quote.tokensHeld.toLocaleString("nl-NL")}{" "}
+            investor-held tokens at the current value. Token holders receive:
+          </p>
+          <p className="mt-3 text-3xl font-semibold text-valyra-ink">
+            {formatEUR(quote.payout)}
+          </p>
+          <div className="mt-5 flex justify-end gap-2">
+            <Button variant="ghost" onClick={() => setSettling(null)}>
+              Cancel
+            </Button>
+            <Button onClick={confirmSettle}>Confirm settlement</Button>
+          </div>
+        </Modal>
       )}
     </div>
   );
