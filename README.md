@@ -12,6 +12,7 @@ Netherlands and opened up to small investors.
 
 <p align="center"><img src="docs/assets/landing.png" alt="Valyra landing page" width="900"></p>
 
+[![CI](https://github.com/Franreal123/valyra-mvp/actions/workflows/ci.yml/badge.svg)](https://github.com/Franreal123/valyra-mvp/actions/workflows/ci.yml)
 ![Next.js 14](https://img.shields.io/badge/Next.js-14-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?logo=typescript)
 ![Tests](https://img.shields.io/badge/tests-50_unit_%2B_e2e-7fc242)
