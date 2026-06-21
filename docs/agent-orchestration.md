@@ -29,12 +29,14 @@ Each feature followed the same disciplined cycle rather than ad-hoc prompting:
 brainstorm  →  write spec  →  write plan  →  TDD implement  →  self-review  →  verify (lint/test/build/e2e)  →  PR
 ```
 
-1. **Brainstorm & spec.** Intent and edge cases are pinned down first. The
-   resulting design specs are checked in under
-   [`superpowers/specs/`](superpowers/specs/) (e.g. the homeowner- and
-   investor-flow designs).
-2. **Plan.** A step-by-step implementation plan is written before code — see
-   [`superpowers/plans/`](superpowers/plans/).
+1. **Brainstorm & spec.** Intent and edge cases are pinned down first. Design
+   specs for the **representative flows** (the homeowner and investor journeys)
+   are checked in under [`superpowers/specs/`](superpowers/specs/); later
+   features (KYC gate, secondary market, settlement) followed the same loop but
+   were specced inline rather than as standalone docs.
+2. **Plan.** A step-by-step implementation plan is written before code — the
+   homeowner-flow plan is in [`superpowers/plans/`](superpowers/plans/) as the
+   worked example of this step.
 3. **Test-driven implementation.** Logic in `src/lib/` (AVM, contract,
    eligibility, market, scenarios, settlement) was built with Vitest tests
    first — 50 unit tests today.
