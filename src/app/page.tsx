@@ -34,6 +34,9 @@ const tickerItems = listings.map((l) => ({
   pct: l.apprPct,
 }));
 
+// The landing shows a featured slice; the full market lives on /investor.
+const featured = listings.slice(0, 9);
+
 const marketValue = seedHomes.reduce((s, h) => s + h.valuation, 0);
 const avgAppr =
   seedHomes.reduce((s, h) => s + simulateAppreciationPct(h), 0) /
@@ -215,14 +218,14 @@ export default function LandingPage() {
               href="/investor"
               className="group hidden shrink-0 items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue hover:text-valyra-ink sm:inline-flex"
             >
-              Browse all
+              Browse all {seedHomes.length} homes
               <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {listings.map((l, i) => (
-              <ListingCard key={l.id} listing={l} delay={0.1 + i * 0.06} />
+            {featured.map((l, i) => (
+              <ListingCard key={l.id} listing={l} delay={0.1 + i * 0.05} />
             ))}
           </div>
 
@@ -230,7 +233,7 @@ export default function LandingPage() {
             href="/investor"
             className="group mt-6 inline-flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[0.18em] text-valyra-blue hover:text-valyra-ink sm:hidden"
           >
-            Browse the full market
+            Browse all {seedHomes.length} homes
             <ArrowUpRight size={14} />
           </Link>
         </section>
@@ -385,7 +388,8 @@ function ListingCard({ listing, delay }: { listing: Listing; delay: number }) {
 // The signature artifact: a tokenized home as a "live" asset card —
 // appreciation curve drawing in, ownership grid filling with tokens.
 function AssetCard() {
-  const filled = 12; // 12 of 100 cells "owned" in this illustration
+  const total = 50; // 10 × 5 grid — kept compact so the card isn't too tall
+  const filled = 6; // 6 of 50 ≈ 12% tokenized
   return (
     <div className="anim-settle w-full max-w-[20.5rem]" style={{ animationDelay: "0.3s" }}>
       <div className="relative -rotate-[1.2deg] rounded-2xl border border-valyra-line bg-white p-5 shadow-pop transition-transform duration-500 hover:rotate-0">
@@ -400,7 +404,7 @@ function AssetCard() {
         </div>
 
         {/* Canal house */}
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-3">
           <CanalHouse />
         </div>
 
@@ -412,13 +416,13 @@ function AssetCard() {
 
         {/* Ownership grid */}
         <div className="mt-4 grid grid-cols-10 gap-[3px]">
-          {Array.from({ length: 100 }, (_, i) => {
+          {Array.from({ length: total }, (_, i) => {
             const on = i < filled;
             return (
               <span
                 key={i}
                 className={`aspect-square rounded-[1px] ${on ? "anim-pop bg-valyra-lime" : "bg-valyra-ink/15"}`}
-                style={on ? { animationDelay: `${1 + i * 0.04}s` } : undefined}
+                style={on ? { animationDelay: `${1 + i * 0.06}s` } : undefined}
               />
             );
           })}
@@ -485,8 +489,8 @@ function CertRow({ l, r }: { l: string; r: string }) {
 function CanalHouse() {
   return (
     <svg
-      width="116"
-      height="138"
+      width="100"
+      height="121"
       viewBox="0 0 124 150"
       fill="none"
       stroke="#1f3a4a"
