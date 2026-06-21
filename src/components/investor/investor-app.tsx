@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { ShieldCheck } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Card } from "@/components/ui/card";
 import { HomeCard } from "@/components/investor/home-card";
 import { BuyPanel } from "@/components/investor/buy-panel";
 import { KycGate } from "@/components/investor/kyc-gate";
@@ -74,23 +75,35 @@ export function InvestorApp() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <div className="mb-8 flex items-end justify-between">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex items-center gap-3">
-          <h1 className="display text-4xl font-medium text-valyra-ink">Marketplace</h1>
+          <h1 className="display text-4xl font-medium text-valyra-ink">
+            Marketplace
+          </h1>
           {verified && (
             <span className="inline-flex items-center gap-1 rounded-full bg-valyra-lime/20 px-2 py-1 text-xs font-medium text-valyra-ink">
               <ShieldCheck size={12} /> Verified
             </span>
           )}
         </div>
-        <nav className="flex gap-1 rounded-full bg-valyra-ink/5 p-1">
+        <nav
+          role="tablist"
+          aria-label="Investor views"
+          className="flex gap-1 self-start rounded-full bg-valyra-ink/5 p-1 sm:self-auto"
+        >
           {TABS.map((t) => (
             <button
               key={t.id}
+              role="tab"
+              id={`tab-${t.id}`}
+              aria-selected={tab === t.id}
+              aria-controls={`panel-${t.id}`}
               onClick={() => setTab(t.id)}
               className={cn(
-                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors",
-                tab === t.id ? "bg-white text-valyra-ink shadow-sm" : "text-valyra-ink/60",
+                "rounded-full px-4 py-1.5 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-valyra-blue",
+                tab === t.id
+                  ? "bg-white text-valyra-ink shadow-sm"
+                  : "text-valyra-ink/60",
               )}
             >
               {t.label}
@@ -100,27 +113,47 @@ export function InvestorApp() {
       </div>
 
       {tab === "market" && (
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {activeHomes.map((home) => (
-            <HomeCard
-              key={home.id}
-              home={home}
-              available={tokensAvailable(home)}
-              onInvest={handleInvest}
-            />
-          ))}
+        <div role="tabpanel" id="panel-market" aria-labelledby="tab-market">
+          {activeHomes.length === 0 ? (
+            <Card className="text-center text-valyra-ink/60">
+              No homes are open for investment right now — every tokenized home
+              has been settled. Sign a new home in the Homeowner flow to list
+              one.
+            </Card>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {activeHomes.map((home) => (
+                <HomeCard
+                  key={home.id}
+                  home={home}
+                  available={tokensAvailable(home)}
+                  onInvest={handleInvest}
+                />
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {tab === "trade" && (
-        <SecondaryMarket
-          listings={listings}
-          homeById={getHome}
-          onBuy={handleBuyListing}
-        />
+        <div role="tabpanel" id="panel-trade" aria-labelledby="tab-trade">
+          <SecondaryMarket
+            listings={listings}
+            homeById={getHome}
+            onBuy={handleBuyListing}
+          />
+        </div>
       )}
 
-      {tab === "portfolio" && <PortfolioView summary={summary} />}
+      {tab === "portfolio" && (
+        <div
+          role="tabpanel"
+          id="panel-portfolio"
+          aria-labelledby="tab-portfolio"
+        >
+          <PortfolioView summary={summary} />
+        </div>
+      )}
 
       {buying && (
         <BuyPanel

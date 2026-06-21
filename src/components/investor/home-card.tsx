@@ -16,10 +16,13 @@ export function HomeCard({
   available: number;
   onInvest: (home: TokenizedHome) => void;
 }) {
-  const soldPct = Math.round(((home.tokenCount - available) / home.tokenCount) * 100);
+  const soldPct = Math.round(
+    ((home.tokenCount - available) / home.tokenCount) * 100,
+  );
   const fullyFunded = available <= 0;
   // Not strictly sold out, but too few tokens left to clear the €100 minimum.
-  const belowMinimum = !fullyFunded && available * home.tokenPrice < MIN_INVESTMENT_EUR;
+  const belowMinimum =
+    !fullyFunded && available * home.tokenPrice < MIN_INVESTMENT_EUR;
   const closed = fullyFunded || belowMinimum;
 
   return (
@@ -36,14 +39,21 @@ export function HomeCard({
 
       <dl className="grid grid-cols-2 gap-y-1 text-sm">
         <dt className="text-valyra-ink/60">Home value</dt>
-        <dd className="text-right font-medium text-valyra-ink">{formatEUR(home.valuation)}</dd>
+        <dd className="text-right font-medium text-valyra-ink">
+          {formatEUR(home.valuation)}
+        </dd>
         <dt className="text-valyra-ink/60">Token price</dt>
-        <dd className="text-right font-medium text-valyra-ink">{formatEURPrecise(home.tokenPrice)}</dd>
+        <dd className="text-right font-medium text-valyra-ink">
+          {formatEURPrecise(home.tokenPrice)}
+        </dd>
       </dl>
 
       <div>
         <div className="h-2 w-full overflow-hidden rounded-full bg-valyra-ink/10">
-          <div className="h-full rounded-full bg-valyra-blue" style={{ width: `${soldPct}%` }} />
+          <div
+            className="h-full rounded-full bg-valyra-blue"
+            style={{ width: `${soldPct}%` }}
+          />
         </div>
         <p className="mt-1 text-xs text-valyra-ink/60">
           {soldPct}% funded · {available.toLocaleString("nl-NL")} of{" "}
@@ -55,9 +65,14 @@ export function HomeCard({
         variant={closed ? "ghost" : "primary"}
         disabled={closed}
         onClick={() => onInvest(home)}
+        aria-label={closed ? undefined : `Invest in ${home.address}`}
         className="mt-1"
       >
-        {fullyFunded ? "Fully funded" : belowMinimum ? "Almost funded" : "Invest"}
+        {fullyFunded
+          ? "Fully funded"
+          : belowMinimum
+            ? "Almost funded"
+            : "Invest"}
       </Button>
     </Card>
   );
