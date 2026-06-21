@@ -49,7 +49,7 @@ it instantly appears in the investor marketplace and the operator desk.
 | Flow | Route | What you can do |
 | --- | --- | --- |
 | **Homeowner** | `/homeowner` | Apply → get an AVM valuation (with confidence band & "how we valued this") → see the cash offer → sign. The home is tokenized. |
-| **Investor** | `/investor` | Browse the marketplace → pass a simulated KYC/suitability gate → buy fractional tokens from €100 → view a portfolio with appreciation, allocation chart, and a resale (secondary) market. |
+| **Investor** | `/investor` | Browse a market of 24 tokenized homes → pass a simulated KYC/suitability gate → buy fractional tokens from €100 → track a portfolio dashboard (KPIs, allocation, one-year outlook) → resell on the secondary market → read an in-app **How it works** tab with the full risk & legal disclosures. |
 | **Operator (Desk)** | `/admin` | Platform KPIs (capital raised/deployed, funded %, token supply) and per-home **settlement** (buy out token holders at current value). |
 
 <p align="center">

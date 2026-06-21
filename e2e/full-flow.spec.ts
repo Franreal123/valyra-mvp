@@ -27,7 +27,8 @@ test("home is signed by its owner, funded by an investor, then settled at the de
   await expect(page.getByText("Agreement signed")).toBeVisible();
 
   // --- 2. Investor: the freshly signed home appears in the marketplace ------
-  await page.getByRole("link", { name: "Investors" }).click();
+  // Scope nav to the header — the footer repeats these links.
+  await page.locator("header").getByRole("link", { name: "Investors" }).click();
   await expect(
     page.getByRole("button", { name: `Invest in ${ADDRESS}` }),
   ).toBeVisible();
@@ -62,7 +63,7 @@ test("home is signed by its owner, funded by an investor, then settled at the de
   await expect(page.getByText(ADDRESS, { exact: true })).toBeVisible();
 
   // --- 3. Desk: the same home is settleable, then shows as settled ----------
-  await page.getByRole("link", { name: "Desk" }).click();
+  await page.locator("header").getByRole("link", { name: "Desk" }).click();
   const row = page.getByRole("row", { name: new RegExp(ADDRESS) });
   await expect(row).toBeVisible();
 

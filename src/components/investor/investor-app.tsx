@@ -139,6 +139,11 @@ export function InvestorApp() {
 
       {tab === "trade" && (
         <div role="tabpanel" id="panel-trade" aria-labelledby="tab-trade">
+          <p className="mb-5 max-w-2xl text-sm leading-relaxed text-valyra-ink/60">
+            The resale market. Buy tokens other investors have listed — a direct
+            transfer between holders at the quoted price, so a home&apos;s funded
+            supply is unchanged. This is how you exit a position before settlement.
+          </p>
           <SecondaryMarket
             listings={listings}
             homeById={getHome}
