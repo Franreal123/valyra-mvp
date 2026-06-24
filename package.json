@@ -18,7 +18,7 @@
     "lucide-react": "^1.21.0",
     "next": "14.2.35",
     "react": "^18",
-    "react-dom": "^18",
+    "react-dom": "^19",
     "recharts": "^3.8.1",
     "tailwind-merge": "^3.6.0"
   },
@@ -26,7 +26,7 @@
     "@playwright/test": "^1.61.0",
     "@types/node": "^20.19.43",
     "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react-dom": "^19",
     "eslint": "^8",
     "eslint-config-next": "14.2.35",
     "eslint-config-prettier": "^10.1.8",
